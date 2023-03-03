@@ -1,22 +1,12 @@
-import React from 'react';
-import './App.css';
+import React from 'react'
+import './App.css'
+import { Navbar } from './components/Navbar'
 
 function App() {
 
   return (
     <div className="page">
-      <nav className='nav-main'>
-        <div className="page-title">
-          Quiet Goat Labs
-        </div>
-        <ul className='nav-links'>
-          <li>About</li>
-          <li>Portfolio</li>
-          <li>Packages</li>
-          <li>Products</li>
-          <li>Contact</li>
-        </ul>
-      </nav>
+      <Navbar />
       <main>
         Main content
       </main>
@@ -24,7 +14,7 @@ function App() {
         c. 2023
       </footer>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
