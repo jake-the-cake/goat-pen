@@ -1,6 +1,8 @@
 :root {
-  --darkGreen: hsl(120 77% 16% / 1);
-  --dark: #161616;
+  --lightGreen: hsl(144 95% 16% / 1);
+  --darkGreen: hsl(158 95% 11% / 1);
+  --darker: #161616;
+  --dark: #373737;
   --light: #ededed;
 }
 
@@ -10,21 +12,26 @@
 
 body {
   margin:  0;
-  background-color: var(--dark);
+  background-color: var(--darker);
 }
 
 .page {
   width: 100%;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .nav-main {
   color: var(--light);
-  background-color: var(--darkGreen);
+  background: linear-gradient(to right, var(--lightGreen), var(--darkGreen));
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1em;
+  box-shadow: 0 -6px 8px 2px var(--light),
+            inset 0 -7px 6px -6px var(--darker);
 }
 
 .page-title {
@@ -36,4 +43,13 @@ body {
   margin: 0px;
   display: flex;
   gap: 1em;
+}
+
+main {
+  flex: 1;
+  padding: 1em;;
+}
+
+footer {
+  background-color: var(--darkGreen);
 }

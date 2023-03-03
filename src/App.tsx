@@ -17,6 +17,12 @@ function App() {
           <li>Contact</li>
         </ul>
       </nav>
+      <main>
+        Main content
+      </main>
+      <footer>
+        c. 2023
+      </footer>
     </div>
   );
 }
