@@ -3,7 +3,8 @@
   --darkGreen: hsl(158 95% 11% / 1);
   --darker: #161616;
   --dark: #373737;
-  --light: #ededed;
+  --lighter: #ededed;
+  --light: #dadada;
 }
 
 *, *::after, *::before {
@@ -12,7 +13,7 @@
 
 body {
   margin:  0;
-  background-color: var(--darker);
+  background-color: var(--light);
 }
 
 .page {
@@ -24,14 +25,14 @@ body {
 }
 
 .nav-main {
-  color: var(--light);
+  color: var(--lighter);
   background: linear-gradient(to right, var(--lightGreen), var(--darkGreen));
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1em;
-  box-shadow: 0 -6px 8px 2px var(--light),
-            inset 0 -7px 6px -6px var(--darker);
+  box-shadow: 0 -6px 8px 2px var(--darker),
+            inset 0 -7px 6px -6px var(--light);
 }
 
 .page-title {
