@@ -7,11 +7,10 @@ export function Navbar() {
         Quiet Goat Labs
       </div>
       <ul className='nav-links'>
-        <li>About</li>
-        <li>Portfolio</li>
-        <li>Packages</li>
-        <li>Products</li>
-        <li>Contact</li>
+        <li className='nav-link'>Packages</li>
+        <li className='nav-link'>Products</li>
+        <li className='nav-link'>Services</li>
+        <li className='nav-link'>Company</li>
       </ul>
     </nav>
   )
