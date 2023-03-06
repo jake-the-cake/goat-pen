@@ -34,7 +34,7 @@ body {
   align-items: center;
   padding: 1em;
   box-shadow: 0 -6px 8px 2px var(--darker),
-            inset 0 -7px 6px -6px var(--light);
+            inset 0 -6px 8px -6px var(--light);
 }
 
 .page-title {
@@ -60,7 +60,21 @@ body {
 
 main {
   flex: 1;
-  padding: 1em;;
+  padding: 1em;
+}
+
+.content-container {
+  background-color: var(--lighter);
+  border: 1px solid var(--darkGreen);
+  border-radius: .5rem;
+  padding: .5rem 1rem 1rem;
+  color: var(--darkGreen);
+}
+
+.content-header {
+  color: var(--lightGreen);
+  margin-top: 0px;
+  padding-top: 0px;
 }
 
 footer {

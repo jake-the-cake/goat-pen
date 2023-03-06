@@ -8,7 +8,10 @@ function App() {
     <div className="page">
       <Navbar />
       <main>
-        Main content
+        <div className="content-container">
+          <h1 className="content-header">Header</h1>
+          Main content
+        </div>
       </main>
       <footer>
         c. 2023
