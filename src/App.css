@@ -14,7 +14,8 @@
 
 body {
   margin:  0;
-  background-color: var(--light);
+  background-color: var(--lighter);
+  color: var(--darkGreen);
 }
 
 .page {
@@ -51,7 +52,7 @@ body {
 .nav-link {
   cursor: pointer;
   transition: color .2s linear;
-  text-shadow: -1px -1px 0px var(--darker);
+  text-shadow: -1px -1px 0px var(--darker), -1px 1px 1px var(--darker);
 }
 
 .nav-link:hover {
@@ -65,20 +66,25 @@ main {
 
 .content-container {
   background-color: var(--lighter);
-  border: 1px solid var(--darkGreen);
-  border-radius: .5rem;
-  padding: .5rem 1rem 1rem;
-  color: var(--darkGreen);
 }
 
-.content-header {
+.two-col-stack {
+  display: flex;
+  gap: 1rem;
+}
+
+.content-header,
+.card-header {
   color: var(--midGreen);
-  margin-top: 0px;
-  padding-top: 0px;
 }
 
 footer {
   background-color: var(--darkGreen);
+  border-top: 2px solid var(--lightGreen);
   color: var(--light);
   padding: .5rem 1rem;
+}
+
+.flex-1 {
+  flex: 1;
 }

@@ -8,9 +8,15 @@ function App() {
     <div className="page">
       <Navbar />
       <main>
-        <div className="content-container">
-          <h1 className="content-header">Header</h1>
-          Main content
+        <div className="content-container two-col-stack">
+          <article className='flex-1'>
+            <h2 className="content-header">Main Header</h2>
+            <p>Main content</p>
+          </article>
+          <section>
+            <h3 className='card-header'>Card Header</h3>
+            <p>Card content</p>
+          </section>
         </div>
       </main>
       <footer>
