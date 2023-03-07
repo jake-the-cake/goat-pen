@@ -1,5 +1,6 @@
 :root {
-  --lightGreen: hsl(144 95% 16% / 1);
+  --lightGreen: hsl(108 75% 65% / 1);
+  --midGreen: hsl(144 95% 22% / 1);
   --darkGreen: hsl(158 95% 11% / 1);
   --darker: #161616;
   --dark: #373737;
@@ -14,8 +15,6 @@
 body {
   margin:  0;
   background-color: var(--light);
-  /* font-family: 'Dancing Script', cursive; */
-  /* font-family: 'Oleo Script', cursive; */
 }
 
 .page {
@@ -27,8 +26,8 @@ body {
 }
 
 .nav-main {
+  background-image: linear-gradient(to right, var(--midGreen), var(--darkGreen));
   color: var(--lighter);
-  background: linear-gradient(to right, var(--lightGreen), var(--darkGreen));
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -52,10 +51,11 @@ body {
 .nav-link {
   cursor: pointer;
   transition: color .2s linear;
+  text-shadow: -1px -1px 0px var(--darker);
 }
 
 .nav-link:hover {
-  color: yellowgreen;
+  color: var(--lightGreen);
 }
 
 main {
@@ -72,7 +72,7 @@ main {
 }
 
 .content-header {
-  color: var(--lightGreen);
+  color: var(--midGreen);
   margin-top: 0px;
   padding-top: 0px;
 }
