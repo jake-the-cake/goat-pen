@@ -1,5 +1,6 @@
 :root {
   --lightGreen: hsl(108 75% 65% / 1);
+  --lightGreen50: hsl(108 75% 65% / .5);
   --midGreen: hsl(144 95% 22% / 1);
   --darkGreen: hsl(158 95% 11% / 1);
   --darker: #161616;
@@ -62,6 +63,23 @@ body {
 main {
   flex: 1;
   padding: 1em;
+}
+
+.page-alert {
+  background-color: var(--lightGreen50);
+  border: 1px dotted var(--midGreen);
+  padding: .25rem .5rem;
+  text-align: center;
+}
+
+.page-alert-title{
+  font-weight: 700;
+}
+
+.page-alert-blob {
+  font-size: .8rem;
+  font-style: italic;
+  margin-left: .5rem;
 }
 
 .content-container {
