@@ -63,6 +63,9 @@ body {
 main {
   flex: 1;
   padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .page-alert {
@@ -91,9 +94,37 @@ main {
   gap: 1rem;
 }
 
+.side-card {
+  /* background-color: var(--light); */
+  position: relative;
+}
+
 .content-header,
 .card-header {
   color: var(--midGreen);
+  margin-top: 0px;
+}
+
+.card-header {
+  background-color: var(--lightGreen50);
+  color: var(--lightGreen);
+  position: relative;
+  z-index: 2;
+  padding: .35rem 1rem;
+}
+
+.card-header::before {
+  content: "";
+  position: absolute;
+  transform: rotate(-2deg) translateY(-.3rem);
+  width: 90%;
+  height: 110%;
+  background-color: var(--darkGreen);
+  border-bottom: 1px solid var(--lighter);
+  border-top: 1px solid var(--lighter);
+  left: 5%;
+  top: 5%;
+  z-index: -1;
 }
 
 footer {

@@ -17,8 +17,8 @@ function App() {
             <h2 className="content-header">Main Header</h2>
             <p>Main content</p>
           </article>
-          <section>
-            <h3 className='card-header'>Card Header</h3>
+          <section className='side-card'>
+            <h3 className='card-header'>Content For header</h3>
             <p>Card content</p>
           </section>
         </div>
