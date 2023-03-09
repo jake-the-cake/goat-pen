@@ -4,7 +4,7 @@ import { Navbar } from './components/Navbar'
 import { SideCardWithHeader } from './components/SideCardWithHeader'
 
 function App() {
-
+  console.log(window.location)
   return (
     <div className="page">
       <Navbar />
