@@ -1,5 +1,6 @@
 import React from 'react'
 import './App.css'
+import { HorizontalSlider } from './components/HorizontalSlider'
 import { Navbar } from './components/Navbar'
 import { SideCardWithHeader } from './components/SideCardWithHeader'
 
@@ -22,38 +23,29 @@ function App() {
           </article>
           <section className='vertical-stack'>
             <SideCardWithHeader
-              title='Default Text'
-              body='Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas molestias natus quos voluptatem fugiat, eius cum, qui reiciendis, beatae quo accusamus excepturi quaerat nam a! Pariatur quis aliquid autem totam?'
+              title='Updates'
+              body='Recently added a bunch of like... stuff.'
               badge={(
                 <>
-                  +
+                  See All
                 </>
               )}
             />
             <SideCardWithHeader
-              title='Default Text'
+              title='Request Features'
               body='Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas molestias natus quos voluptatem fugiat, eius cum, qui reiciendis, beatae quo accusamus excepturi quaerat nam a! Pariatur quis aliquid autem totam?'
             />
           </section>
         </div>
-        <section className='horizontal-stack'>
-          <SideCardWithHeader
-            title='Default Text'
-            body='Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas molestias natus quos voluptatem fugiat, eius cum, qui reiciendis, beatae quo accusamus excepturi quaerat nam a! Pariatur quis aliquid autem totam?'
-          />
-          <SideCardWithHeader
-            title='Default Text'
-            body='Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas molestias natus quos voluptatem fugiat, eius cum, qui reiciendis, beatae quo accusamus excepturi quaerat nam a! Pariatur quis aliquid autem totam?'
-          />
-          <SideCardWithHeader
-            title='Default Text'
-            body='Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas molestias natus quos voluptatem fugiat, eius cum, qui reiciendis, beatae quo accusamus excepturi quaerat nam a! Pariatur quis aliquid autem totam?'
-          />
-          <SideCardWithHeader
-            title='Default Text'
-            body='Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas molestias natus quos voluptatem fugiat, eius cum, qui reiciendis, beatae quo accusamus excepturi quaerat nam a! Pariatur quis aliquid autem totam?'
-          />
-        </section>
+        <HorizontalSlider
+          contents={[
+            'a',
+            'b',
+            'c',
+            'd',
+            'e'
+          ]}
+        />
       </main>
       <footer>
         c. 2023

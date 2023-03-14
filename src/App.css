@@ -3,6 +3,8 @@
   --lightGreen50: hsl(108 75% 65% / .5);
   --midGreen: hsl(144 95% 22% / 1);
   --darkGreen: hsl(158 95% 11% / 1);
+  --midOrange: hsl(31 90% 40% / 1);
+  --darkOrange: hsl(27 100% 33% / 1);
   --darker: #161616;
   --dark: #373737;
   --lighter: #ededed;
@@ -62,7 +64,6 @@ body {
 
 main {
   flex: 1;
-  padding: 1em;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -72,6 +73,7 @@ main {
   background-color: var(--lightGreen50);
   border: 1px dotted var(--midGreen);
   padding: .25rem .5rem;
+  margin: 1rem 1rem 0;
   text-align: center;
 }
 
@@ -88,12 +90,13 @@ main {
 .two-col-stack {
   display: flex;
   gap: 1rem;
+  padding: 1rem;
 }
 
 .horizontal-stack {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
 }
 
 .vertical-stack {
@@ -107,6 +110,7 @@ main {
   margin-top: .5rem;
   flex: 1;
   min-width: 300px;
+  max-width: 450px;
 }
 
 .content-header,
@@ -116,56 +120,65 @@ main {
 }
 
 .card-header {
-  border-radius: 80% 80% 35% 35%;
+  border-radius: 80%;
   background-color: var(--darkGreen);
   color: var(--light);
   position: relative;
   z-index: 2;
   padding: .3rem 0 .8rem;
   text-align: center;
-  overflow: hidden;
 }
 
 .card-header::before {
   content: "";
   position: absolute;
   width: 100%;
-  height: 96%;
+  height: 86%;
   opacity: .8;
   box-shadow: 0 1px 2px 1px var(--darker),0 3px 7px 2px var(--light);
   background-color: var(--midGreen);
-  border-radius: 0 0 30% 30%;
-  top: -21%;
+  border-radius: 50%;
+  top: -13%;
   left: 0%;
   z-index: -1;
 }
 
 .card-title {
-  padding: 0%;
-  margin: 0%;
+  margin: 0% auto;
+  padding: 0px;
+  transform-style: preserve-3d;
+  transform: scaleY(2.3) translateY(-25%) rotateX(-5deg);
+  text-shadow: -1px -1px 0px var(--darker), 1px -1px 0px var(--darker);
+  position: relative;
+  z-index: 5;
 }
 
 .card-body {
-  margin: -1.5rem .5rem 0px;
+  margin: -1.5rem .3rem 0px;
   font-size: .8rem;
-  padding: 1.5rem .5rem .5rem;
+  padding: 2.2rem .5rem .5rem;
   background-image: linear-gradient(to bottom, #0000 10%, var(--light) 30%);
   border-bottom: 3px solid var(--midGreen);
-  box-shadow: 0 4px 7px -3px var(--dark);
 }
 
 .card-badge {
   position: absolute;
-  top: -3%;
+  top: -11%;
   right: 3%;
-  border-radius: 50%;
-  width: 1.5rem;
-  padding: .2rem;
-  aspect-ratio: 1;
-  display: grid;
-  place-content: center;
-  background-color: var(--lightGreen);
+  border-radius: 9999px;
+  padding: .2rem .5rem;
+  font-size: .8rem;
+  background-color: var(--midOrange);
+  color: var(--light);
   z-index: 10;
+  box-shadow: 0 1px 2px 1px var(--darker), 0 -2px 6px 3px var(--lighter);
+  cursor: pointer;
+  font-weight: 900;
+  transition: .3s background-color linear;
+}
+
+.card-badge:hover {
+  background-color: var(--darkOrange);
 }
 
 footer {
@@ -179,8 +192,72 @@ footer {
   flex: auto;
 }
 
+.slider-container {
+  background-color: var(--midGreen);
+  width: 100vw;
+  padding: .3rem 1.6rem;
+  position: relative;
+}
+
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--lightGreen);
+  cursor: pointer;
+  transition: .3s linear color;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  padding: 0px;
+}
+
+.slider-left:hover,
+.slider-right:hover {
+  color: var(--light);
+}
+
+.slider-left {
+  left: .8rem;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.slider-right {
+  right: .8rem;
+  transform: translateX(50%) translateY(-50%);
+}
+
+.slider-element {
+  background-color: red;
+  min-width: 300px;
+  flex: 0 0 30%;
+  transition: transform .5s ease-in;
+}
+
+.inset-container {
+  background-color: var(--lighter);
+  overflow: hidden;
+  padding: .5rem;
+  box-shadow: inset 0 2px 10px var(--dark),
+            inset 0 -2px 10px var(--dark),
+            0 0 5px 0px var(--light);
+}
+
 @media only screen and (max-width: 650px) {
   .two-col-stack, .horizontal-stack {
     flex-direction: column;
+  }
+
+  .slider-btn {
+    display: none;
+  }
+
+  .slider-container {
+    padding: .3rem .8rem;
+  }
+
+  .slider-element {
+    flex: 0 0 50%;
   }
 }
