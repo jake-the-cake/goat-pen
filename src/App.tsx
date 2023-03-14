@@ -24,6 +24,11 @@ function App() {
             <SideCardWithHeader
               title='Default Text'
               body='Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas molestias natus quos voluptatem fugiat, eius cum, qui reiciendis, beatae quo accusamus excepturi quaerat nam a! Pariatur quis aliquid autem totam?'
+              badge={(
+                <>
+                  +
+                </>
+              )}
             />
             <SideCardWithHeader
               title='Default Text'

@@ -4,7 +4,9 @@
   "description": "Server for QGL",
   "main": "lib/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon lib/index.js",
+    "comp": "tsc -w"
   },
   "author": "jake-the-cake",
   "license": "ISC",
