@@ -22,17 +22,22 @@ export function HorizontalSlider (props: ElementContentProps): JSX.Element {
 
 	function handleSlide (e: MouseEvent<HTMLButtonElement>): void {
 		e.preventDefault()
+		const newElementList = []
 		const slides = getSlides()
-		console.log(e.target)
 		if (slides.length > 0) {
-			let elementWidth = (slides[0] as HTMLDivElement).offsetWidth + 1.94 + 16
-			if ((e.target as HTMLButtonElement).classList.contains('slider-right')) {
-				elementWidth = -elementWidth
+			let slideDistance = (slides[0] as HTMLDivElement).offsetWidth + 16
+			if ((e.target as HTMLButtonElement).classList.contains('slider-left')) {
+				slideDistance *= -1
+				newElementList.push([...slides.slice(1)], slides[0])
+				// const [firstSlide, ...otherSlides] = slides
+				// setElements()
+				console.log(newElementList)
 			}
 			slides.forEach(function(slide){
-				const offset = Number((slide as HTMLDivElement).style.transform.replace('translateX(', '').replace('px)', ''));
-				(slide as HTMLDivElement).style.transform = `translateX(-${ elementWidth - offset }px)`
+				const currentOffset = Number((slide as HTMLDivElement).style.transform.replace('translateX(', '').replace('px)', ''));
+				(slide as HTMLDivElement).style.transform = `translateX(${(currentOffset + slideDistance).toFixed(1)}px)`
 			})
+
 		}
 	}
 	
