@@ -16,6 +16,8 @@ export function HorizontalSlider (props: ElementContentProps): JSX.Element {
 	const [elements, setElements] = useState<any[]>([])
 	if (elements.length === 0 && props.contents !== undefined) setElements(props.contents)
 
+	console.log(elements)
+
 	useEffect(function (){
 		offsetSlides(getSlides())
 	}, [])
@@ -29,8 +31,6 @@ export function HorizontalSlider (props: ElementContentProps): JSX.Element {
 			if ((e.target as HTMLButtonElement).classList.contains('slider-left')) {
 				slideDistance *= -1
 				newElementList.push(...slides.slice(1), slides[0])
-				// const [firstSlide, ...otherSlides] = slides
-				console.log(newElementList)
 			}
 			slides.forEach(function(slide){
 				const currentOffset = Number((slide as HTMLDivElement).style.transform.replace('translateX(', '').replace('px)', ''));
