@@ -33,7 +33,17 @@ function App() {
             />
             <SideCardWithHeader
               title='Request Features'
-              body='Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas molestias natus quos voluptatem fugiat, eius cum, qui reiciendis, beatae quo accusamus excepturi quaerat nam a! Pariatur quis aliquid autem totam?'
+              body={(
+                <div className=''>
+                  <form className='mini-form'>
+                    <label htmlFor='email-field'>Email:</label>
+                    <input type="text" id='email-field' />
+                    <label htmlFor='email-field'>Request:</label>
+                    <textarea id='email-field' />
+                    <button>Submit</button>
+                  </form>
+                </div>
+              )}
             />
           </section>
         </div>
