@@ -3,6 +3,7 @@ import './App.css'
 import { HorizontalSlider } from './components/HorizontalSlider'
 import { Navbar } from './components/Navbar'
 import { SideCardWithHeader } from './components/SideCardWithHeader'
+import { RequestFormSmall } from './forms/RequestFormSmall'
 
 function App() {
   console.log(window.location)
@@ -33,17 +34,7 @@ function App() {
             />
             <SideCardWithHeader
               title='Request Features'
-              body={(
-                <div className=''>
-                  <form className='mini-form'>
-                    <label htmlFor='email-field'>Email:</label>
-                    <input type="text" id='email-field' />
-                    <label htmlFor='email-field'>Request:</label>
-                    <textarea id='email-field' />
-                    <button>Submit</button>
-                  </form>
-                </div>
-              )}
+              body={( <RequestFormSmall /> )}
             />
           </section>
         </div>
