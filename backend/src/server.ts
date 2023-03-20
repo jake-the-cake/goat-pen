@@ -1,13 +1,17 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import { packagesRouter } from './routes/packages'
+import { requestsRouter } from './routes/requests'
 
 dotenv.config()
 const app = express()
 
 app.use(express.static('build'))
+app.use(express.json())
+app.use(express.urlencoded({extended: false}))
 
 app.use('/api/packages', packagesRouter)
+app.use('/api/requests', requestsRouter)
 
 const port = setPort()
 app.listen(port, function(){

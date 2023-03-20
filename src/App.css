@@ -9,6 +9,7 @@
   --dark: #373737;
   --lighter: #ededed;
   --light: #dadada;
+  --lightGray50: #aaa5;
 }
 
 *, *::after, *::before {
