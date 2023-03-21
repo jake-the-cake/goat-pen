@@ -6,9 +6,9 @@ import { requestsRouter } from './routes/requests'
 dotenv.config()
 const app = express()
 
-app.use(express.static('build'))
+app.use(express.urlencoded({extended: true}))
 app.use(express.json())
-app.use(express.urlencoded({extended: false}))
+app.use(express.static('build'))
 
 app.use('/api/packages', packagesRouter)
 app.use('/api/requests', requestsRouter)

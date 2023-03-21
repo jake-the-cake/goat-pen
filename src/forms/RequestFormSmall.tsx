@@ -8,9 +8,17 @@ export function RequestFormSmall(props: Props): JSX.Element {
     e.preventDefault()
     console.log(e.target)
     const form = new FormData(e.target as HTMLFormElement)
+    console.log(form.entries())
     fetch('/api/requests/new-feature', {
       method: 'POST',
-      body: JSON.stringify({somethin:'this'})
+      mode: 'cors',
+      headers: {
+        'Content-Type':'application/json',
+        'Accept':'application/json'
+      },
+      body: JSON.stringify({
+        "somthin": "testttt"
+      })
     })
       .then(response => response.json())
       .then(data => console.log(data))
