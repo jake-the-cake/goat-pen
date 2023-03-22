@@ -2,13 +2,24 @@ import React, { FormEvent } from 'react'
 
 type Props = {}
 
+export type StringIndexedStringObject = {
+  [key: string]: string
+}
+
+export function CreateObjectFromForm(form: HTMLFormElement): StringIndexedStringObject {
+  const data: StringIndexedStringObject = {}
+  Array.from(new FormData(form).entries()).forEach(function(entry){
+    data[entry[0].toString()] = entry[1].toString()
+  })
+  return data
+}
+
 export function RequestFormSmall(props: Props): JSX.Element {
 
   function handleFormSubmit(e: FormEvent): void {
     e.preventDefault()
-    console.log(e.target)
-    const form = new FormData(e.target as HTMLFormElement)
-    console.log(form.entries())
+    const formData: StringIndexedStringObject = CreateObjectFromForm(e.target as HTMLFormElement)
+
     fetch('/api/requests/new-feature', {
       method: 'POST',
       mode: 'cors',
@@ -16,9 +27,7 @@ export function RequestFormSmall(props: Props): JSX.Element {
         'Content-Type':'application/json',
         'Accept':'application/json'
       },
-      body: JSON.stringify({
-        "somthin": "testttt"
-      })
+      body: JSON.stringify(formData)
     })
       .then(response => response.json())
       .then(data => console.log(data))
