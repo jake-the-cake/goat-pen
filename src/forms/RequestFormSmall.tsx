@@ -14,6 +14,13 @@ export function CreateObjectFromForm(form: HTMLFormElement): StringIndexedString
   return data
 }
 
+export function UseApiCall(path: string, data: StringIndexedStringObject, method: string = 'GET', mode: string = 'cors'): Promise<Response> {
+  const BASE_URL: string = 'http://localhost:6047/api'
+  return fetch( BASE_URL + path, {
+    // method, mode, data
+  })
+}
+
 export function RequestFormSmall(props: Props): JSX.Element {
 
   function handleFormSubmit(e: FormEvent): void {
