@@ -1,0 +1,14 @@
+:root {
+	--color-primary: 190, 72%, 25%;
+	--color-secondary: 205, 65%, 8%;
+
+	--color-accent-subtle: 50, 84%, 73%;
+	--color-accent-bold: 58, 100%, 52%;
+
+	--color-light-100: 0,	0%,	100%;
+	--color-light-200:0, 0%, 90%;
+	--color-light-300: 0, 0%, 80%;
+	--color-dark-100: 0, 0%, 0%;
+	--color-dark-200: 0, 0%, 10%;
+	--color-dark-300: 0, 0%, 20%;
+}

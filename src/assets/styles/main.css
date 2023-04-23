@@ -1,0 +1,43 @@
+@import './root.css';
+
+*,
+*::after,
+*::before {
+	box-sizing: border-box;
+}
+
+body {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	margin: 0;
+	background-color: hsl(var(--color-light-200));
+}
+
+.left-triangle {
+	position: absolute;
+	width: 50vh;
+	height: 100vh;
+	background-image: linear-gradient(
+		64deg,
+		hsl(var(--color-primary)) 50%,
+		transparent 50%
+	);
+	top: .3em;
+	z-index: -1;
+}
+
+.top-triangle {
+	position: absolute;
+	width: 100vw;
+	height: 50vw;
+	background-image: linear-gradient(155deg,
+		hsl(var(--color-secondary)) 50%,
+		transparent 50%
+	);
+	z-index: -1;
+}
+
+.top-bar {
+	background-color: hsl(var(--color-accent-subtle));
+	height: .3em;
+	width: 100vw;
+}
