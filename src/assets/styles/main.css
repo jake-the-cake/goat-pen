@@ -12,6 +12,28 @@ body {
 	background-color: hsl(var(--color-light-200));
 }
 
+.wrapper {
+	width: 100vw;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	border-top: 4px solid hsl(var(--color-primary));
+	/* justify-content: center; */
+}
+
+.header__title {
+	display: flex;
+	justify-content: center;
+}
+
+.header__title--text {
+	font-family: var(--text-title);
+	color: hsl(var(--color-secondary));
+	font-size: 4rem;
+	line-height: 69%;
+}
+
+
 .left-triangle {
 	position: absolute;
 	width: 50vh;
