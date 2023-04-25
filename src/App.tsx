@@ -8,10 +8,21 @@ function App() {
             Quiet Goat Labs
           </span>
         </header>
-        <nav></nav>
-        <main>
-          <section></section>
-          <section></section>
+        <nav className="nav__main">
+          <div className="nav__links">
+            link
+          </div>
+          <div className="nav__actions">
+            actions
+          </div>
+        </nav>
+        <main className="main__container">
+          <section className="section__left">
+            left
+          </section>
+          <section className="section__right">
+            right
+          </section>
         </main>
       </div>
       {/* <div className="top-triangle"></div>

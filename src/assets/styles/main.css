@@ -9,7 +9,7 @@
 body {
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	margin: 0;
-	background-color: hsl(var(--color-light-200));
+	background-color: hsl(var(--color-secondary));
 }
 
 .wrapper {
@@ -18,21 +18,55 @@ body {
 	display: flex;
 	flex-direction: column;
 	border-top: 4px solid hsl(var(--color-primary));
-	/* justify-content: center; */
 }
 
 .header__title {
 	display: flex;
 	justify-content: center;
+	background-color: hsl(var(--color-light-100));
 }
 
 .header__title--text {
 	font-family: var(--text-title);
 	color: hsl(var(--color-secondary));
 	font-size: 4rem;
-	line-height: 69%;
+	margin-block: -2% -1%;
 }
 
+.nav__main {
+	display: flex;
+	background-color: hsl(var(--color-secondary));
+	gap: .2rem;
+	padding-block: .2rem;
+}
+
+.nav__main div {
+	background-color: hsl(var(--color-light-100));
+	padding: 1rem;;
+}
+
+.nav_actions {
+	flex: auto;
+}
+.nav__links {
+	flex: 1;
+}
+
+.main__container {
+	display: flex;
+	padding-inline: .2rem;
+	gap: .2rem;
+}
+
+.section__left {
+	flex: 1;
+	background-color: hsl(var(--color-primary));
+}
+
+.section__right {
+	flex: 1;
+	background-color: hsl(var(--color-accent-subtle));
+}
 
 .left-triangle {
 	position: absolute;
