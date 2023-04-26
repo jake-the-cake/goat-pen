@@ -15,5 +15,6 @@
 	--text-title: 'Permanent Marker', cursive;
 
 	--layout-line-thickness: .2rem;
-	--layout-bg-color: hsl(var(--color-secondary));
+	--layout-bg-color: hsl(var(--color-dark-200));
+	--layout-font-light: hsl(var(--color-light-200));
 }

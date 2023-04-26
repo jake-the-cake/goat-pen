@@ -1,21 +1,13 @@
+import { Header } from "./components/Header"
+import { Navbar } from "./components/Navbar"
+
 function App() {
   console.log(window.location)
   return (
     <>
       <div className="wrapper">
-        <header className="header__title">
-          <span className="header__title--text">
-            Quiet Goat Labs
-          </span>
-        </header>
-        <nav className="nav__main">
-          <div className="nav__links">
-            link
-          </div>
-          <div className="nav__actions">
-            actions
-          </div>
-        </nav>
+        <Header />
+        <Navbar />
         <main className="main__container">
           <section className="section__left">
             left
@@ -30,9 +22,6 @@ function App() {
           <div className="footer__section">c</div>
         </footer>
       </div>
-      {/* <div className="top-triangle"></div>
-      <div className="left-triangle"></div>
-      <div className="top-bar"></div> */}
     </>
   )
 }

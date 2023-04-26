@@ -9,24 +9,26 @@
 body {
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	margin: 0;
-	background-color: hsl(var(--color-dark-300));
+	background-color: var(--layout-bg-color);
 }
 
 .wrapper {
 	width: 100vw;
 	min-height: 100vh;
 	display: flex;
+	padding-top: var(--layout-line-thickness);
 	flex-direction: column;
-	border-top: 4px solid hsl(var(--color-primary));
+	border-block: .3rem solid hsl(var(--color-primary));
 }
 
-.header__title {
+.header__container {
 	display: flex;
 	justify-content: center;
 	background-color: hsl(var(--color-light-100));
+	margin-inline: var(--layout-line-thickness);
 }
 
-.header__title--text {
+.header__title {
 	font-family: var(--text-title);
 	color: hsl(var(--color-secondary));
 	font-size: 4rem;
@@ -39,16 +41,40 @@ body {
 	padding-block: var(--layout-line-thickness);
 }
 
-.nav__main div {
+.nav__section {
 	background-color: hsl(var(--color-light-100));
-	padding: 1rem;;
+	padding: .5rem 1rem;
 }
 
-.nav_actions {
-	flex: auto;
+.nav__actions {
+	display: flex;
+	gap: .5rem;
+	background-color: hsl(var(--color-light-200));
 }
+
 .nav__links {
 	flex: 1;
+}
+
+.nav__icon {
+	--button-size: 2.6rem;
+	width: var(--button-size);
+	height: var(--button-size);
+	border: var(--layout-line-thickness) solid var(--layout-bg-color);
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.nav__icon:first-child {
+	border-color: hsl(var(--color-primary));
+	background-color: hsl(var(--color-accent-subtle));
+}
+
+.nav__icon:last-child {
+	border-color: hsl(var(--color-accent-subtle));
+	background-color: hsl(var(--color-primary));
 }
 
 .main__container {
@@ -69,11 +95,12 @@ body {
 }
 
 .footer__container {
+	color: var(--layout-font-light);
 	display: flex;
 	background-image: linear-gradient(
 		to bottom,
-		var(--layout-bg-color) 40%,
-		hsl(var(--color-primary)) 115%
+		transparent 60%,
+		hsl(var(--color-primary)) 98%
 	);
 	padding: 1rem;
 	gap: .5rem;
