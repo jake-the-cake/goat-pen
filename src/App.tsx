@@ -24,6 +24,11 @@ function App() {
             right
           </section>
         </main>
+        <footer className="footer__container">
+          <div className="footer__section">l</div>
+          <div className="footer__section">r</div>
+          <div className="footer__section">c</div>
+        </footer>
       </div>
       {/* <div className="top-triangle"></div>
       <div className="left-triangle"></div>

@@ -9,7 +9,7 @@
 body {
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	margin: 0;
-	background-color: hsl(var(--color-secondary));
+	background-color: hsl(var(--color-dark-300));
 }
 
 .wrapper {
@@ -35,9 +35,8 @@ body {
 
 .nav__main {
 	display: flex;
-	background-color: hsl(var(--color-secondary));
-	gap: .2rem;
-	padding-block: .2rem;
+	gap: var(--layout-line-thickness);
+	padding-block: var(--layout-line-thickness);
 }
 
 .nav__main div {
@@ -54,8 +53,9 @@ body {
 
 .main__container {
 	display: flex;
-	padding-inline: .2rem;
-	gap: .2rem;
+	padding-inline: var(--layout-line-thickness);
+	gap: var(--layout-line-thickness);
+	flex: 1;
 }
 
 .section__left {
@@ -68,6 +68,23 @@ body {
 	background-color: hsl(var(--color-accent-subtle));
 }
 
+.footer__container {
+	display: flex;
+	background-image: linear-gradient(
+		to bottom,
+		var(--layout-bg-color) 40%,
+		hsl(var(--color-primary)) 115%
+	);
+	padding: 1rem;
+	gap: .5rem;
+}
+
+.footer__section {
+	flex: 1;
+}
+
+
+/* 
 .left-triangle {
 	position: absolute;
 	width: 50vh;
@@ -79,8 +96,8 @@ body {
 	);
 	top: .3em;
 	z-index: -1;
-}
-
+} */
+/* 
 .top-triangle {
 	position: absolute;
 	width: 100vw;
@@ -96,4 +113,4 @@ body {
 	background-color: hsl(var(--color-accent-subtle));
 	height: .3em;
 	width: 100vw;
-}
+} */
