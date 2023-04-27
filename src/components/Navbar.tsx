@@ -5,8 +5,8 @@ export function Navbar() {
         link
       </div>
       <div className="nav__actions nav__section">
-        <div className="nav__icon">C</div>
-        <div className="nav__icon">S</div>
+        <div className="nav__icon btn__bold">C</div>
+        <div className="nav__icon btn__subtle">S</div>
       </div>
     </nav>
   )
