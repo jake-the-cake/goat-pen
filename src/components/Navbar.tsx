@@ -7,11 +7,12 @@ export function Navbar() {
         {
           navbar.links.map(function(link, i) {
             return (
-            <div key={ 'navlink' + i} className='nav__item'>
-              <a href='/'>
-                {link.label}
-              </a>
-            </div>)
+              <div key={ 'navlink' + i} className='nav__item'>
+                <a href='/'>
+                  {link.label}
+                </a>
+              </div>
+            )
           })
         }
       </div>
