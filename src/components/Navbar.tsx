@@ -6,7 +6,12 @@ export function Navbar() {
       <div className="nav__links nav__section">
         {
           navbar.links.map(function(link, i) {
-            return <div key={ 'navlink' + i} className='nav__item'><a href='/'>{link.label}</a></div>
+            return (
+            <div key={ 'navlink' + i} className='nav__item'>
+              <a href='/'>
+                {link.label}
+              </a>
+            </div>)
           })
         }
       </div>
