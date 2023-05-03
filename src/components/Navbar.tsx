@@ -17,9 +17,11 @@ export function Navbar() {
         }
       </div>
       <div className="nav__actions nav__section">
-        <div className="nav__icon btn__bold">C</div>
+        <div className="nav__icon btn__bold">
+          <img src="./mail-light.png" alt="" />
+        </div>
         <div className="nav__icon btn__subtle">
-          <img src="./search.png" alt="" />
+          <img src="./search-light.png" alt="" />
         </div>
       </div>
     </nav>

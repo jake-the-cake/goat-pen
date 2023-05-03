@@ -109,7 +109,7 @@ body {
 }
 
 .nav__icon img {
-	width: 80%;
+	width: 60%;
 	
 }
 
@@ -118,7 +118,7 @@ body {
 }
 
 .btn__subtle {
-	background-color: hsl(var(--color-light-300), .3);
+	background-color: hsl(var(--color-light-300), .1);
 }
 
 .main__container {
