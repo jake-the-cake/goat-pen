@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Header } from "./components/Header"
 import { Navbar } from "./components/Navbar"
+import { Home } from "./pages/Home"
 
 function App() {
   console.log(window.location)
@@ -10,18 +11,7 @@ function App() {
         <Header />
         <Navbar />
           <Routes>
-            <Route path="/" element={
-              (
-                <main className="main__container">
-                  <section className="section__left">
-                    left
-                  </section>
-                  <section className="section__right">
-                    right
-                  </section>
-                </main>
-              )
-            } />
+            <Route path="/" element={ <Home /> } />
           </Routes>
         <footer className="footer__container">
           <div className="footer__section">l</div>
