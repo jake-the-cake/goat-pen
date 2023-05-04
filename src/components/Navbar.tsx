@@ -8,7 +8,7 @@ export function Navbar() {
           navbar.links.map(function(link, i) {
             return (
               <div key={ 'navlink' + i} className='nav__item'>
-                <a href='/'>
+                <a href={ link.url ?? '/404' }>
                   {link.label}
                 </a>
               </div>

@@ -68,7 +68,7 @@ body {
 	display: flex;
 	align-items: center;
 	overflow: hidden;
-	cursor: pointer;
+	/* cursor: pointer; */
 }
 
 .nav__item a {
@@ -76,6 +76,8 @@ body {
 	font-style: italic;
 	font-weight: 700;
 	color: hsl(var(--color-primary));
+	position: relative;
+	z-index: 10;
 }
 
 .nav__item::after {
@@ -85,11 +87,24 @@ body {
 	content: '';
 	height: 100%;
 	width: 120%;
-	background-color: hsl(var(--color-secondary), .5);
-	z-index: 10;
+	background-color: hsl(var(--color-secondary), .2);
+	z-index: 5;
 	transition: top .2s linear;
 }
 
+.nav__item::before {
+	position: absolute;
+	left: -10%;
+	top: -100%;
+	content: '';
+	height: 100%;
+	width: 120%;
+	background-color: hsl(var(--color-accent-subtle), .5);
+	z-index: 5;
+	transition: top .2s linear;
+}
+
+.nav__item:hover::before,
 .nav__item:hover::after {
 	top: 0px;
 }
