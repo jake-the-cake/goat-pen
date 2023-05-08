@@ -14,9 +14,11 @@ function App() {
             <Route path="/" element={ <Home /> } />
           </Routes>
         <footer className="footer__container">
-          <div className="footer__section">l</div>
           <div className="footer__section">r</div>
-          <div className="footer__section">c</div>
+          <div className="footer__section">c. 2023 </div>
+          <div className="footer__section">Quiet Goat Labs is a web development company based in New Jersey, USA.
+          <hr className="footer__hr" />
+          c. 2023 - All Rights Reserved</div>
         </footer>
       </div>
     </BrowserRouter>
