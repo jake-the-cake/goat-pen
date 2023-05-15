@@ -1,4 +1,5 @@
 @import './root.css';
+@import './forms.css';
 
 *,
 *::after,
@@ -128,14 +129,6 @@ body {
 	
 }
 
-.btn__bold {
-	background-color: hsl(var(--color-primary));
-}
-
-.btn__subtle {
-	background-color: hsl(var(--color-light-300), .1);
-}
-
 .main__container {
 	display: flex;
 	padding-inline: var(--layout-line-thickness);
@@ -164,6 +157,9 @@ body {
 	flex: 1;
 	text-align: center;
 	font-size: .8rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 .footer__hr {
@@ -174,6 +170,7 @@ body {
 		hsl(var(--color-accent-subtle), .6)
 	);
 	height: 1px;
+	width: 80%;
 }
 
 

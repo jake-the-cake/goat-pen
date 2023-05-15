@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { Footer } from "./components/Footer"
 import { Header } from "./components/Header"
 import { Navbar } from "./components/Navbar"
 import { Home } from "./pages/Home"
@@ -13,13 +14,7 @@ function App() {
           <Routes>
             <Route path="/" element={ <Home /> } />
           </Routes>
-        <footer className="footer__container">
-          <div className="footer__section">r</div>
-          <div className="footer__section">c. 2023 </div>
-          <div className="footer__section">Quiet Goat Labs is a web development company based in New Jersey, USA.
-          <hr className="footer__hr" />
-          c. 2023 - All Rights Reserved</div>
-        </footer>
+        <Footer />
       </div>
     </BrowserRouter>
   )

@@ -1,0 +1,46 @@
+.btn__bold {
+	background-color: hsl(var(--color-primary));
+  color: hsl(var(--color-light-200));
+}
+
+.btn__subtle {
+	background-color: hsl(var(--color-light-300), .1);
+}
+
+.small-form__container {
+  background-color: hsl(var(--color-light-300), .2);
+  padding: .5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  align-items: center;
+}
+
+.small-form__input {
+  border-radius: 9999px;
+  padding: .2rem 1rem;
+  border: 3px solid hsl(var(--color-secondary));
+  background-color: hsl(var(--color-light-300), .9);
+  outline: none;
+  width: 100%;
+}
+
+.small-form__input:focus {
+  background-color: hsl(var(--color-light-200));
+}
+
+.small-form__button {
+  cursor: pointer;
+  font-weight: 700;
+  border-radius: 9999px;
+  width: 50%;
+  padding: .3rem;
+  outline: none;
+  border: 2px transparent solid;
+  transition: border .2s linear, background .2s linear;
+}
+
+.small-form__button:hover {
+  background-color: hsl(var(--color-primary), .7);
+  border-color: hsl(var(--color-secondary));
+}
