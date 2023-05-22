@@ -12,6 +12,7 @@ app.use(express.static('build'))
 
 app.use('/api/packages', packagesRouter)
 app.use('/api/requests', requestsRouter)
+app.use('/api/newsletter', newsletterRouter)
 
 const port = setPort()
 app.listen(port, function(){

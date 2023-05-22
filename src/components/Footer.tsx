@@ -1,6 +1,20 @@
+import { MouseEvent } from "react"
+
+export function useApiCall(config: any): Promise {
+  return fetch( config.path, {
+    method: config.method || 'GET',
+    body: config.body || {},
+    mode: config.mode || 'cors',
+    headers: config.headers || {
+      
+    }
+  })
+}
+
 export function Footer () {
   function JoinNewsletterForm () {
-    function joinNewsletter() {
+    function joinNewsletter(e: MouseEvent): void {
+      e.preventDefault()
 
     }
 
