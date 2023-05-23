@@ -5,13 +5,16 @@ export const navbar = {
       url: '/services'
     },
     {
-      label: 'Packages'
+      label: 'Packages',
+      url: '/packages'
     },
     {
-      label: 'Products'
+      label: 'Products',
+      url :'/products'
     },
     {
-      label: 'Support'
+      label: 'Support',
+      url: '/support'
     }
   ],
   actions: {

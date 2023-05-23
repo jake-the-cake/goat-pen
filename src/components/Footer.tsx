@@ -1,6 +1,6 @@
-import { MouseEvent } from "react"
+import { FormEvent } from "react"
 
-export function useApiCall(config: any): Promise {
+export function useApiCall(config: any): Promise<any> {
   return fetch( config.path, {
     method: config.method || 'GET',
     body: config.body || {},
@@ -13,7 +13,7 @@ export function useApiCall(config: any): Promise {
 
 export function Footer () {
   function JoinNewsletterForm () {
-    function joinNewsletter(e: MouseEvent): void {
+    function joinNewsletter(e: FormEvent): void {
       e.preventDefault()
       console.log('click')
     }
@@ -24,7 +24,7 @@ export function Footer () {
           Enter your email to signup for updates.
         </label>
         <input type="text" className="small-form__input" />
-        <button type="button" className="small-form__button btn__bold">Join</button>
+        <button type="submit" className="small-form__button btn__bold">Join</button>
       </form>
     )
   }
