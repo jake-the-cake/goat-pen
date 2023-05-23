@@ -15,7 +15,7 @@ export function Footer () {
   function JoinNewsletterForm () {
     function joinNewsletter(e: MouseEvent): void {
       e.preventDefault()
-
+      console.log('click')
     }
 
     return (
