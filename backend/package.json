@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "mongoose": "^7.2.0"
+    "mongoose": "^7.2.0",
+    "validate-email": "^1.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
