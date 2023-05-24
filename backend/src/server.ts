@@ -1,13 +1,18 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
 import { packagesRouter } from './routes/packages'
 import { requestsRouter } from './routes/requests'
+import { newsletterRouter } from './routes/newsletter'
+import { connectDB } from './database/db'
 
 dotenv.config()
 const app = express()
+connectDB()
 
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
+app.use(cors())
 app.use(express.static('build'))
 
 app.use('/api/packages', packagesRouter)

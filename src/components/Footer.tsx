@@ -1,12 +1,13 @@
 import { FormEvent } from "react"
 
-export function useApiCall(config: any): Promise<any> {
-  return fetch( config.path, {
+export function UseApiCall(config: any): Promise<any> {
+  return fetch( 'http://localhost:6047' + config.path, {
     method: config.method || 'GET',
-    body: config.body || {},
+    body: JSON.stringify(config.body),
     mode: config.mode || 'cors',
-    headers: config.headers || {
-      
+    headers: {
+      "Content-Type": "application/json",
+      ...config.headers
     }
   })
 }
@@ -15,7 +16,16 @@ export function Footer () {
   function JoinNewsletterForm () {
     function joinNewsletter(e: FormEvent): void {
       e.preventDefault()
-      console.log('click')
+      const email: string = ((e.target as HTMLFormElement).elements[0] as HTMLInputElement).value || ''
+      UseApiCall({
+        path: '/api/newsletter/join',
+        method: 'POST',
+        body: { email }
+      }).then( res => res.json() ).then( data => {
+        console.log(data)
+      }).catch( err => {
+        console.log( err.message )
+      })
     }
 
     return (
