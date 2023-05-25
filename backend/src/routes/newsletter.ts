@@ -15,23 +15,29 @@ export function returnError(error: string) {
 
 const router = express.Router()
 
-router.post('/join', function(req, res){
+router.post('/join', async function(req, res){
   let newUser: any = {}
-  try {
-    newUser = new EmailsModel(req.body)
-    let error: any = newUser.validateSync()
-    if (error) {
-      const errMessage: string = reformatValidationMessage(error.message, 'email')
-      newUser = returnError(errMessage)
-      throw Error(errMessage)
+  const { email } = req.body
+  if (await EmailsModel.findOne({ email })){
+    newUser = returnError('That email has already signed up.')
+  }
+  else {
+    try {
+      newUser = new EmailsModel({ email })
+      let error: any = newUser.validateSync()
+      if (error) {
+        const errMessage: string = reformatValidationMessage(error.message, 'email')
+        newUser = returnError(errMessage)
+        throw Error(errMessage)
+      }
+      if (isEmail(newUser.email)) newUser.save()
+      else {
+        console.log(newUser.email)
+        newUser = returnError('Bad email.')
+      }
+    } catch (err: any) {
+      console.log(err.message)
     }
-    if (isEmail(newUser.email)) newUser.save()
-    else {
-      console.log(newUser.email)
-      newUser = returnError('Bad email.')
-    }
-  } catch (err: any) {
-    console.log(err.message)
   }
   res.json(newUser)
 })
