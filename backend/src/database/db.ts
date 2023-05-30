@@ -28,7 +28,6 @@ class GoatUri extends GoatString {
   uriBits: UriBitsType & StringIndex
   
   constructor(text: string) {
-    // console.log(text)
     super(text)
     this.uriBits = {
       original: text
@@ -65,24 +64,36 @@ class GoatUri extends GoatString {
   }
 
   displayUri() {
-    const {
-      scheme,
-      host,
-      subdomain,
-      domain,
-      port,
-      path,
-      query,
-      fragment
-    } = this.uriBits
-    return ((scheme || '') +
-      (host || '') +
-      (subdomain || '') +
-      (domain || '') +
-      (port || '') +
-      (path || '') +
-      (query || '') +
-      (fragment || ''))
+    // put url bits into variables
+    const { scheme, host, subdomain, domain, topleveldomain,
+      port, path, query, fragment } = this.uriBits
+    const uriBits = { scheme, host, subdomain, domain, topleveldomain,
+      port, path, query, fragment } 
+
+    console.log( uriBits) 
+    // set all undefined bits to empty string
+    Array.from(Object.entries(this.uriBits)).forEach(function(prop: string[], i: number, arr: any[] & StringIndex) {
+      // console.log(arr[prop[0]])
+      console.log(arr)
+      if (!arr[prop[0]]) {
+
+      }
+    })
+
+
+
+
+    // display URL in correct order
+    // return (
+    //   this.uriBits.scheme +
+    //   this.uriBits.host +
+    //   this.uriBits.subdomain +
+    //   this.uriBits.domain +
+    //   this.uriBits.port +
+    //   this.uriBits.path +
+    //   this.uriBits.query +
+    //   this.uriBits.fragment
+    // )
   }
 
   obscure(section: string = 'domain') {
@@ -92,14 +103,21 @@ class GoatUri extends GoatString {
   }
 }
 
-export function connectDB(uri: string = process.env.DB_URI_ERR as string) {
+console.log(new GoatUri('http://fake.website.co.uk:420/this/is/a/path?search="something"#gobirds').getScheme().getDomains().obscure('scheme').displayUri())
+
+export function connectDB(uri: string = process.env.DB_URI_DEV as string) {
+  // connect database at DB_URI_[mode]
   mongoose.connect(uri)
+
+  // on success, log connection 
   .then(function( db ){
     console.log('Data connection')
     // new GoatUri(uri).getScheme().getDomains().obscure().displayUri()
   })
+
+  // on failed connection, log error and try connection again
   .catch(function( err ){
-    console.log(`Cannot connect to ${new GoatUri(uri).getScheme().getDomains().obscure().displayUri()}`)
+    console.log(`Cannot connect to ${new GoatUri(uri).getScheme().getDomains().obscure('scheme').displayUri()}`)
     connectDB(process.env.DB_URI_DEV)
   })
 }
