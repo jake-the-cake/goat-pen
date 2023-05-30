@@ -72,7 +72,7 @@ class GoatUri extends GoatString {
 
     console.log( uriBits) 
     // set all undefined bits to empty string
-    Array.from(Object.entries(this.uriBits)).forEach(function(prop: string[], i: number, arr: any[] & StringIndex) {
+    Array.from(Object.entries(uriBits)).forEach(function(prop: string[], i: number, arr: any[] & StringIndex) {
       // console.log(arr[prop[0]])
       console.log(arr)
       if (!arr[prop[0]]) {
