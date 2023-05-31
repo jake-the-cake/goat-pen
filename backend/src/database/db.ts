@@ -26,9 +26,14 @@ class GoatString {
 
 class GoatUri extends GoatString {
   uriBits: UriBitsType & StringIndex
+  uriBitList: string[]
   
   constructor(text: string) {
     super(text)
+    this.uriBitList = [
+      'scheme', 'host', 'subdomain', 'domain', 'topleveldomain',
+      'port', 'path', 'query', 'fragment'
+    ]
     this.uriBits = {
       original: text
     }
@@ -39,15 +44,19 @@ class GoatUri extends GoatString {
     return this
   }
 
+  // has todo
   getDomains(start: string = '://', end: string = '/') {
     const domains: string[] = this.uriBits.original.split(start)[1].split(end)[0].split('.')
     const len = domains.length
     const checkPort = domains[len-1].split(':')
     if (checkPort[1]) {
       domains[len - 1] = checkPort[0]
-      this.uriBits.port = ':' + checkPort[1] 
+      this.uriBits.port = checkPort[1] 
     }
     switch (len) {
+      case 0:
+        //throw err
+        break
       case 1:
         [this.uriBits.host] = domains
         break
@@ -57,53 +66,64 @@ class GoatUri extends GoatString {
           this.uriBits.topleveldomain
         ] = domains
         break
+      case 3:
+        [
+          this.uriBits.subdomain,
+          this.uriBits.domain,
+          this.uriBits.topleveldomain
+        ] = domains
+        break
       default:
-        //throw error
+        domains[2] = domains.slice(2).join('.');
+        [
+          this.uriBits.subdomain,
+          this.uriBits.domain,
+          this.uriBits.topleveldomain
+        ] = domains
+        break
     }
     return this
   }
 
   displayUri() {
-    // put url bits into variables
-    const { scheme, host, subdomain, domain, topleveldomain,
-      port, path, query, fragment } = this.uriBits
-    const uriBits = { scheme, host, subdomain, domain, topleveldomain,
-      port, path, query, fragment } 
-
-    console.log( uriBits) 
+    // copy object to manipulate for output
+    const uriBits: StringIndex = {...this.uriBits}
     // set all undefined bits to empty string
-    Array.from(Object.entries(uriBits)).forEach(function(prop: string[], i: number, arr: any[] & StringIndex) {
-      // console.log(arr[prop[0]])
-      console.log(arr)
-      if (!arr[prop[0]]) {
-
-      }
+    this.uriBitList.forEach(function(key: string, i: number) {
+      if (!uriBits[key]) uriBits[key] = ''
     })
-
-
-
-
     // display URL in correct order
-    // return (
-    //   this.uriBits.scheme +
-    //   this.uriBits.host +
-    //   this.uriBits.subdomain +
-    //   this.uriBits.domain +
-    //   this.uriBits.port +
-    //   this.uriBits.path +
-    //   this.uriBits.query +
-    //   this.uriBits.fragment
-    // )
+    return (
+      (uriBits.scheme && uriBits.scheme + '://') +
+      uriBits.host +
+      (uriBits.subdomain && uriBits.subdomain + '.') +
+      uriBits.domain +
+      (uriBits.topleveldomain && '.' + uriBits.topleveldomain) +
+      (uriBits.port && ':' + uriBits.port) +
+      uriBits.path +
+      uriBits.query +
+      uriBits.fragment
+    )
   }
 
-  obscure(section: string = 'domain') {
-    if (section === 'domain' && this.uriBits.domain === undefined) section = 'host'
-    this.uriBits[section] = this.uriBits[section].split('').map(char => char = '*').join('')
+  obscure(sections: string | string[] = 'domain', char: string = '*') {
+    // if string, make it an array
+    if (typeof sections === 'string') sections = [sections]
+    // copy object to manipulate
+    const uriBits = this.uriBits
+
+    sections.forEach(function(section: string) {
+      // determine if host or domain
+      if (section === 'domain' && uriBits.domain === undefined) section = 'host'
+      // change chars to supplied char or default
+      uriBits[section] = uriBits[section].split('').map(c => c = char).join('')
+    })
+
     return this
   }
 }
 
-console.log(new GoatUri('http://fake.website.co.uk:420/this/is/a/path?search="something"#gobirds').getScheme().getDomains().obscure('scheme').displayUri())
+console.log(new GoatUri('http://fake.website.co.uk:420/this/is/a/path?search="something"#gobirds').getScheme().getDomains().obscure('port').displayUri())
 
 export function connectDB(uri: string = process.env.DB_URI_DEV as string) {
   // connect database at DB_URI_[mode]
