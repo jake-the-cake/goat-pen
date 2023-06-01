@@ -5,7 +5,7 @@ import { GoatUri } from '../utils/strings/uri'
 /*
   FOR CLASS TESTING PURPOSES
 */
-console.log(new GoatUri('http://fake.website.co.uk:420/this/is/a/path?search="something"#gobirds').getScheme().getDomains().obscure('port').displayUri())
+console.log(new GoatUri('http://git@fake.website.co.uk:420/this/is/a/path?search="something"#gobirds').getScheme().getCreds().getDomains().obscure().displayUri())
 // ----------------- END TEST
 
 

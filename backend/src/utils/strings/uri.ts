@@ -9,7 +9,7 @@ export class GoatUri extends GoatString {
   constructor(text: string) {
     super(text)
     this.uriBitList = [
-      'scheme', 'host', 'subdomain', 'domain', 'topleveldomain',
+      'scheme', 'creds', 'host', 'subdomain', 'domain', 'topleveldomain',
       'port', 'path', 'query', 'fragment'
     ]
     this.uriBits = {
@@ -18,12 +18,18 @@ export class GoatUri extends GoatString {
   }
 
   getScheme(separator: string = '://') {
-    this.uriBits.scheme = this.uriBits.original.split(separator)[0] + separator
+    this.uriBits.scheme = this.uriBits.original.split(separator)[0]
+    return this
+  }
+
+  getCreds(separator: string = "@") {
+    this.uriBits.creds = this.uriBits.original.split('://')[1].split(separator)[0]
     return this
   }
 
   // has todo
   getDomains(start: string = '://', end: string = '/') {
+    if (this.uriBits.original.split('@').length > 1) start = '@'
     const domains: string[] = this.uriBits.original.split(start)[1].split(end)[0].split('.')
     const len = domains.length
     const checkPort = domains[len-1].split(':')
@@ -70,9 +76,18 @@ export class GoatUri extends GoatString {
     this.uriBitList.forEach(function(key: string, i: number) {
       if (!uriBits[key]) uriBits[key] = ''
     })
+    uriBits.creds && this.obscure('creds')
+    // obscure credintials
+    if (this.uriBits.creds) {
+      this.obscure('creds')
+      uriBits.creds = this.uriBits.creds
+      this.getCreds()
+    }
+
     // display URL in correct order
     return (
       (uriBits.scheme && uriBits.scheme + '://') +
+      (uriBits.creds && uriBits.creds + '@') +
       uriBits.host +
       (uriBits.subdomain && uriBits.subdomain + '.') +
       uriBits.domain +
@@ -96,6 +111,7 @@ export class GoatUri extends GoatString {
       // change chars to supplied char or default
       uriBits[section] = uriBits[section].split('').map(c => c = char).join('')
     })
+    console.log(this.uriBits)
 
     return this
   }
