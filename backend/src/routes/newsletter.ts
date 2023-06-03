@@ -47,9 +47,7 @@ router.post('/join', async function(req, res){
   res.json(newUser)
 })
 
-router.get('/contacts', async function(req, res){
-  const userList = await EmailsModel.find()
-  res.json(userList)
-})
+router.route('/contacts')
+  .get(all(EmailsModel))
 
 export { router as newsletterRouter }
