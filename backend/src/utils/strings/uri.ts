@@ -111,7 +111,6 @@ export class GoatUri extends GoatString {
       // change chars to supplied char or default
       uriBits[section] = uriBits[section].split('').map(c => c = char).join('')
     })
-    console.log(this.uriBits)
 
     return this
   }

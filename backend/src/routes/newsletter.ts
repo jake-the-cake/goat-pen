@@ -1,6 +1,7 @@
+import express from 'express'
 import { isEmail } from '../utils/validation'
 import { EmailsModel } from '../database/models/emails'
-import express from 'express'
+import { all, insert } from '../database/controllers/generic'
 
 export function reformatValidationMessage(message: string, key: string): string {
   return message.split(key + ':')[1]!.trim()
@@ -14,6 +15,10 @@ export function returnError(error: string) {
 }
 
 const router = express.Router()
+
+router.route('/test')
+  .post(insert(EmailsModel))
+  .get(all(EmailsModel))
 
 router.post('/join', async function(req, res){
   let newUser: any = {}
