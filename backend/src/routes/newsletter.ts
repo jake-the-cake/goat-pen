@@ -2,6 +2,7 @@ import express from 'express'
 import { isEmail } from '../utils/validation'
 import { EmailsModel } from '../database/models/emails'
 import { all, insert } from '../database/controllers/generic'
+import { quiggleErr } from '../utils/errors'
 
 export function reformatValidationMessage(message: string, key: string): string {
   return message.split(key + ':')[1]!.trim()
@@ -17,7 +18,12 @@ export function returnError(error: string) {
 const router = express.Router()
 
 router.route('/test')
-  .post(insert(EmailsModel))
+  .post(insert(EmailsModel, {
+    email: function(props) {
+      const error = quiggleErr('email')
+      if (!props!.req.body.email) error.required().saveTo(props!.res)
+    }
+  }))
   .get(all(EmailsModel))
 
 router.post('/join', async function(req, res){

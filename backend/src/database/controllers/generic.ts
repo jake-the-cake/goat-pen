@@ -2,8 +2,8 @@ import { NextFunction } from "express";
 import mongoose, { Model, Document } from "mongoose"
 import { devLog } from "../../utils/logs";
 import { ApiStatus, ExpressFunction, ReqType, ResType } from "../../types/apiObjects";
-import { onApiFailure, onApiSuccess } from "./utils";
-import { StringIndex } from "../../types/generic";
+import { onApiFailure, onApiSuccess, useValidation } from "./utils";
+import { CallbackIndex, StringIndex } from "../../types/generic";
 
 export function init(req: ReqType, res: ResType, next: NextFunction) {
 	devLog(`|--> New api request at ` + new Date().toLocaleTimeString() + ' on ' + new Date().toLocaleDateString())
@@ -21,13 +21,17 @@ export function init(req: ReqType, res: ResType, next: NextFunction) {
 	}
 	// move req body into req object
 	req.api = {
-		body: { ...req.body }
+		body: { ...req.body },
+		details: {
+			started: new Date().getTime()
+		}
 	}
+	devLog(req.api)
 	// next controller
 	next()
 }
 
-export function insert(model: Model<any>): ExpressFunction {
+export function insert(model: Model<any>, validation: CallbackIndex | null = null): ExpressFunction {
 	return function(req: ReqType, res: ResType, next: NextFunction): void {
 		devLog(`Creating a new "${ model.modelName }"...`)
 		// create new model instance
@@ -35,7 +39,9 @@ export function insert(model: Model<any>): ExpressFunction {
 			_id: new mongoose.Types.ObjectId(),
 			...req.api!.body
 		})
-		// return with error handling
+		// run provided validation
+		if (validation) useValidation(validation, { req, res, api })
+		// try to save with error handling
 		return api
 			.save()
 			.then(function() { onApiSuccess(201, api, { req, res }) })
