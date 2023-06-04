@@ -3,9 +3,9 @@ import { ApiStatus, ReqType, ResType } from "../../types/apiObjects"
 import { devLog } from "../../utils/logs"
 import { CallbackIndex, StringIndex } from "../../types/generic"
 
-export function saveAndExit(item: Model<any>, objs: {req: ReqType, res: ResType}) {
+export function saveAndExit(item: Model<any> | Document | any, objs: {req: ReqType, res: ResType}) {
 	return (item as any).save()
-		.then(function() { onApiSuccess(201, item, { req: objs!.req, res: objs!.res }) })
+		.then(function() { onApiSuccess(201, item as any, { req: objs!.req, res: objs!.res }) })
 			.catch(function(err: StringIndex) { onApiFailure(500, err, { req: objs.req, res: objs.res })})		
 }
 

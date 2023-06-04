@@ -2,7 +2,8 @@ import express from 'express'
 import { validateEmail } from '../utils/validation'
 import { EmailsModel } from '../database/models/emails'
 import { all, insert } from '../database/controllers/generic'
-import { ReqType, ResType } from 'types/apiObjects'
+import { ReqType, ResType } from '../types/apiObjects'
+import { saveAndExit } from '../database/controllers/utils'
 
 const router = express.Router()
 
@@ -13,9 +14,12 @@ router.route('/test')
 router.route('/join')
   .post(insert(EmailsModel, { email: validateEmail }))
 
-router.route('/unsubscribe/:id' || '/unsubscibe')
-  .patch(function(req: ReqType, res: ResType) {
-    console.log('patch')
+router.route('/unsubscribe')
+  .patch(async function(req: ReqType, res: ResType) {
+    const id = req.api?.body.id
+    const data = await EmailsModel.findById(id)
+    data!.isActive = false
+    saveAndExit(data as any, { req, res })
   })
 
 router.route('/contacts')
