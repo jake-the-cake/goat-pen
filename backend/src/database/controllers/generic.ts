@@ -2,7 +2,7 @@ import { NextFunction } from "express";
 import mongoose, { Model, Document } from "mongoose"
 import { devLog } from "../../utils/logs";
 import { ApiStatus, ExpressFunction, ReqType, ResType } from "../../types/apiObjects";
-import { onApiFailure, onApiSuccess, useValidation } from "./utils";
+import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils";
 import { CallbackIndex, StringIndex } from "../../types/generic";
 
 export function init(req: ReqType, res: ResType, next: NextFunction) {
@@ -61,8 +61,3 @@ export function all(model: Model<any>, populate?: string[]): ExpressFunction {
 	}
 }
 
-export function saveAndExit(item: Model<any>, objs: {req: ReqType, res: ResType}) {
-	return (item as any).save()
-		.then(function() { onApiSuccess(201, item, { req: objs!.req, res: objs!.res }) })
-			.catch(function(err: StringIndex) { onApiFailure(500, err, { req: objs.req, res: objs.res })})		
-}

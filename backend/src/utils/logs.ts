@@ -5,13 +5,13 @@ class DevLog {
 		this.checkMode(text)
 	}
 
-	checkMode(text: any) {
-		if (process.env.APP_MODE as string !== 'DEV') return { error: 'Not in dev mode.' }
+	checkMode(text: any): this | void {
+		if (process.env.APP_MODE as string !== 'DEV') return
 		this.text = text
 		return this
 	}
 
-	createLog() {
+	createLog(): void {
 		console.log(this.text)
 	}
 }

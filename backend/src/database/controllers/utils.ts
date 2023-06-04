@@ -3,6 +3,12 @@ import { ApiStatus, ReqType, ResType } from "../../types/apiObjects"
 import { devLog } from "../../utils/logs"
 import { CallbackIndex, StringIndex } from "../../types/generic"
 
+export function saveAndExit(item: Model<any>, objs: {req: ReqType, res: ResType}) {
+	return (item as any).save()
+		.then(function() { onApiSuccess(201, item, { req: objs!.req, res: objs!.res }) })
+			.catch(function(err: StringIndex) { onApiFailure(500, err, { req: objs.req, res: objs.res })})		
+}
+
 export function onApiSuccess(code: number, model: Model<any> | any[], objs: { req: ReqType, res: ResType}): void {
 	objs.res.api!['status'] = ApiStatus.ok
 	objs.res.api!['code'] = code
@@ -17,18 +23,20 @@ export function onApiFailure(code: number, error: StringIndex | true, objs: { re
 	final(objs.req, objs.res)
 }
 
-export function final(req: ReqType, res: ResType): void {
+function final(req: ReqType, res: ResType): void {
 	res.api!.info['elapsed'] = stopWatch(req.api!.details.started)
 	res.status(res.api!.code).json(res.api)
+	devLog('|--> API Response sent... [SEE BELOW]')
 	devLog(res.api!)
 }
 
+// maybe a regular util?
 export function stopWatch(start: number): string {
 	return new Date().getTime() - start + 'ms'
 }
 
 export function useValidation(tests: CallbackIndex, objs: {req: ReqType, res: ResType, api: StringIndex}): Promise<boolean> {
-	return new Promise(function(resolve, reject) {
+	return new Promise(function(resolve) {
 		let ok = true
 		Array.from(Object.keys(tests)).forEach(
 			async function(key: string, i: number, a: any[]) {
@@ -39,4 +47,17 @@ export function useValidation(tests: CallbackIndex, objs: {req: ReqType, res: Re
 			}
 		)
 	})
+}
+
+export function isOk(equation: any): boolean[] {
+  return [equation === true, false]
+}
+
+export function validationPromise(check: boolean, onProp: any, atTest: string, inObj: ResType) {
+ return new Promise(function(resolve) {
+  let [is, ok] = isOk(check)
+  if (!is) onProp[atTest]().saveTo(inObj)
+  else ok = true
+  resolve(ok)
+ }) 
 }
