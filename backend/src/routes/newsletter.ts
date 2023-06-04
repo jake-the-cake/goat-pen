@@ -3,6 +3,7 @@ import { isEmail } from '../utils/validation'
 import { EmailsModel } from '../database/models/emails'
 import { all, insert } from '../database/controllers/generic'
 import { quiggleErr } from '../utils/errors'
+import { ResType } from '../types/apiObjects'
 
 export function reformatValidationMessage(message: string, key: string): string {
   return message.split(key + ':')[1]!.trim()
@@ -17,13 +18,36 @@ export function returnError(error: string) {
 
 const router = express.Router()
 
+function isOk(eq: any): boolean[] {
+  return [eq === true, false]
+}
+
+function validationPromise(check: boolean, onProp: any, atTest: string, inObj: ResType) {
+ return new Promise(function(resolve) {
+  let [is, ok] = isOk(check)
+  if (!is) onProp[atTest]().saveTo(inObj)
+  else ok = true
+  resolve(ok)
+ }) 
+}
+
 router.route('/test')
   .post(insert(EmailsModel, {
-    email: function(props) {
-      const error = quiggleErr('email')
-      if (!props!.req.body.email) error.required().saveTo(props!.res)
+    email: function(props, error = quiggleErr('email')): Promise<unknown[]> {
+      const EMAIL: string = props!.req.api.body.email
+      const promises = [
+        new Promise(async function(resolve) {
+          let [is, ok] = isOk(await error.isUnique(EmailsModel, EMAIL))
+          if (!is) error.unique(EMAIL).saveTo(props!.res)
+          else ok = true
+          resolve(is)
+        }),
+        validationPromise(isEmail(EMAIL), error, 'format', props!.res),
+        validationPromise(EMAIL !== '', error, 'required', props!.res),
+      ]
+      return Promise.all(promises)
     }
-  }))
+  }))  
   .get(all(EmailsModel))
 
 router.post('/join', async function(req, res){

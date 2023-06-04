@@ -27,13 +27,16 @@ export function stopWatch(start: number): string {
 	return new Date().getTime() - start + 'ms'
 }
 
-export function useValidation(tests: CallbackIndex, objs: {req: ReqType, res: ResType, api: StringIndex}): void {
-	// run provided validation
-	Array.from(Object.keys(tests)).forEach(
-		function(key: string) {
-			tests[key](objs)
-		}
-	)
-	// abort if validation errors exist
-	if (objs.res.api!.error) throw onApiFailure(objs.res.api!.code, true, { req: objs.req, res: objs.res })
+export function useValidation(tests: CallbackIndex, objs: {req: ReqType, res: ResType, api: StringIndex}): Promise<boolean> {
+	return new Promise(function(resolve, reject) {
+		let ok = true
+		Array.from(Object.keys(tests)).forEach(
+			async function(key: string, i: number, a: any[]) {
+				const results = await tests[key](objs)
+				const analysis = (results as any[]).filter(function(r) { return r === false })
+				if (analysis.length > 0 && ok === true) ok = false
+				if (i >= a.length - 1) resolve(ok)
+			}
+		)
+	})
 }

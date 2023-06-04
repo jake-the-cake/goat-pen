@@ -3,7 +3,7 @@ export interface StringIndex {
 }
 
 export interface CallbackIndex {
-  [key: string]: (props?: {[key: string]: any}) => void
+  [key: string]: (props?: {[key: string]: any}) => void | Promise<void | boolean | unknown[]>
 }
 
 export interface AnyIndex {

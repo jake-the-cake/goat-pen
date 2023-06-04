@@ -32,7 +32,7 @@ export function init(req: ReqType, res: ResType, next: NextFunction) {
 }
 
 export function insert(model: Model<any>, validation: CallbackIndex | null = null): ExpressFunction {
-	return function(req: ReqType, res: ResType, next: NextFunction): void {
+	return function(req: ReqType, res: ResType): void {
 		devLog(`Creating a new "${ model.modelName }"...`)
 		// create new model instance
 		const api = new model({
@@ -40,17 +40,18 @@ export function insert(model: Model<any>, validation: CallbackIndex | null = nul
 			...req.api!.body
 		})
 		// run provided validation
-		if (validation) useValidation(validation, { req, res, api })
-		// try to save with error handling
-		return api
-			.save()
-			.then(function() { onApiSuccess(201, api, { req, res }) })
-			.catch(function(err: StringIndex) { onApiFailure(500, err, { req, res })})		
+		if (validation) {
+			useValidation(validation, { req, res, api })
+			.then(function(result) {
+				if (result === false) throw onApiFailure(res.api!.code, true, { req, res })
+				else return saveAndExit(api, { req, res })
+			}).catch(function(): void { return })	// to catch the caught THROW error from then()
+		} else return saveAndExit(api, { req, res })
 	}
 }
 
 export function all(model: Model<any>, populate?: string[]): ExpressFunction {
-	return function(req: ReqType, res: ResType, next: NextFunction): void {
+	return function(req: ReqType, res: ResType): void {
 		devLog(`Getting all data from "${ model.modelName }"...`)
 		// search and display with error handling
 		model.find<Document>()
@@ -58,4 +59,10 @@ export function all(model: Model<any>, populate?: string[]): ExpressFunction {
 			.then(function(results: Document[]) { onApiSuccess(200, results, {req, res}) })
 			.catch(function(err: StringIndex) { onApiFailure(500, err, {req, res}) })
 	}
+}
+
+export function saveAndExit(item: Model<any>, objs: {req: ReqType, res: ResType}) {
+	return (item as any).save()
+		.then(function() { onApiSuccess(201, item, { req: objs!.req, res: objs!.res }) })
+			.catch(function(err: StringIndex) { onApiFailure(500, err, { req: objs.req, res: objs.res })})		
 }
