@@ -33,6 +33,12 @@ export class QuiggleErr implements ApiErrType {
 		this.code = 400
 		return this
 	}
+
+	notfound(params: string): this {
+		this.message = `${params} not found in '${this.location}.'`
+		this.code = 400
+		return this
+	}
 	
 	async isUnique(model: Model<any>, value: string, loc = this.location): Promise<boolean> {
 		return await new Promise(async function(resolve) {

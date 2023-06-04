@@ -2,8 +2,9 @@ import { Model } from "mongoose"
 import { ApiStatus, ReqType, ResType } from "../../types/apiObjects"
 import { devLog } from "../../utils/logs"
 import { CallbackIndex, StringIndex } from "../../types/generic"
+import { QuiggleErr } from "../../utils/errors"
 
-export function saveAndExit(item: Model<any> | Document | any, objs: {req: ReqType, res: ResType}) {
+export function saveAndExit(item: Model<any> & Document, objs: {req: ReqType, res: ResType}) {
 	return (item as any).save()
 		.then(function() { onApiSuccess(201, item as any, { req: objs!.req, res: objs!.res }) })
 			.catch(function(err: StringIndex) { onApiFailure(500, err, { req: objs.req, res: objs.res })})		
@@ -16,7 +17,7 @@ export function onApiSuccess(code: number, model: Model<any> | any[], objs: { re
 	final(objs.req, objs.res)
 }
 
-export function onApiFailure(code: number, error: StringIndex | true, objs: { req: ReqType, res: ResType}): void {
+export function onApiFailure(code: number, error: StringIndex | QuiggleErr | true, objs: { req: ReqType, res: ResType}): void {
 	objs.res.api!['status'] = ApiStatus.fail
 	objs.res.api!['code'] = code
 	if (error !== true) objs.res.api!['error'] = error

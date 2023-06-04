@@ -4,6 +4,7 @@ import { devLog } from "../../utils/logs";
 import { ApiStatus, ExpressFunction, ReqType, ResType } from "../../types/apiObjects";
 import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils";
 import { CallbackIndex, StringIndex } from "../../types/generic";
+import { quiggleErr } from "../../utils/errors";
 
 export function init(req: ReqType, res: ResType, next: NextFunction) {
 	devLog(`|--> New api request at ` + new Date().toLocaleTimeString() + ' on ' + new Date().toLocaleDateString())
@@ -55,9 +56,19 @@ export function all(model: Model<any>, populate?: string[]): ExpressFunction {
 		devLog(`Getting all data from "${ model.modelName }"...`)
 		// search and display with error handling
 		model.find<Document>()
-			.populate(populate || [])
 			.then(function(results: Document[]) { onApiSuccess(200, results, {req, res}) })
 			.catch(function(err: StringIndex) { onApiFailure(500, err, {req, res}) })
 	}
 }
 
+export function change(model: Model<any>, populate?: string[]): ExpressFunction {
+	return function(req: ReqType, res: ResType) {
+		const _id = req.api!.body.id
+		model.find<Document>({_id})
+			.then(function(result: Document[]) { 
+				if (result)	onApiSuccess(200, (result as any[])[0], {req, res})
+				else onApiFailure(404, quiggleErr(model.modelName).notfound(_id), {req, res})
+			})
+			.catch(function(err: StringIndex) { onApiFailure(500, err, {req, res}) })
+	}
+}
