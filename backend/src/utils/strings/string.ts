@@ -5,3 +5,7 @@ export class GoatString {
     this.text = text
   }
 }
+
+export function goatString(text: string) {
+  return new GoatString(text)
+}

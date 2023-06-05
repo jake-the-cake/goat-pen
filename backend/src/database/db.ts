@@ -1,23 +1,22 @@
 import mongoose from 'mongoose'
-import { GoatUri } from '../utils/strings/uri'
+import { goatUri } from '../utils/strings/uri'
+import config from '../config'
 
-/*  |--> FOR CLASS TESTING PURPOSES */
-console.log(new GoatUri('http://git@fake.website.co.uk:420/this/is/a/path?search="something"#gobirds').getScheme().getCreds().getDomains().obscure().displayUri())
-/*  |--> END TEST  */
+const connectionUri: string = config.mongo.dev
 
-/*  |--> CONNECT TO MONGODB DATABASE */
-export function connectDB(uri: string = process.env.DB_URI_DEV as string) {
-  // connect database at DB_URI_[mode]
-  mongoose.connect(uri)
+export function connectDB(uri: string, serve: () => void): void {
+  
+  mongoose.connect(uri) // connect database at DB_URI_[mode]
+    
+    .then(function( db ): void {
+      // on success, log connection and start server
+      console.log('Database connection established...')
+      serve()
+    })
 
-  // on success, log connection 
-  .then(function( db ){
-    console.log('Data connection')
-  })
-
-  // on failed connection, log error and try connection again
-  .catch(function( err ){
-    console.log(`Cannot connect to ${new GoatUri(uri).getScheme().getDomains().obscure().displayUri()}`)
-    connectDB(process.env.DB_URI_DEV)
-  })
+    .catch(function( err ): void {
+      // on failed connection, log error and try connection again
+      console.log(`Cannot connect to ${goatUri(uri).displayUri()}`)
+      connectDB(connectionUri, serve)
+    })
 }
