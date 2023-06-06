@@ -1,4 +1,13 @@
 import config from '../config'
+import chalk from 'chalk'
+import { AnyIndex } from '../types/generic'
+import { StringIndex } from '../types/generic'
+
+function backToFrontArray(array: any[]): any[] {
+	array.unshift(array[array.length - 1])
+	array.pop()
+	return array
+}
 
 class ServerLog {
 	text: string
@@ -10,29 +19,46 @@ class ServerLog {
 	constructor(text: string = '') {
 		this.text = text
 		this.timestamp = new Date()
+		this.init()
+		console.log(this.date)
 		return this
 	}
 
-	private init() {
-		// this.date =
+	private colors: StringIndex = {
+		dateTime: 'greenBright',
+		separator: 'green'
+	}
+
+	private init(): this {
+		this.date = this.getDate()
+		return this
 	}
 
 	private decorate() {
 
 	}
 
-	getDate(): this {
-		const dateArray = this.timestamp.toLocaleDateString().split('/')
+
+
+
+	getDate(): string {
+		const dateArray = backToFrontArray(this.timestamp.toLocaleDateString().split('/'))
+		const {dateTime, separator} = this.colors
 
 		dateArray.forEach(function(item: string | number, i: number) {
-			if (String(item).split('').length === 1 && i !== 2) dateArray[i] = '0' + item
+			dateArray[i] = (chalk as AnyIndex)[dateTime]((function(): string {
+				if (String(item).split('').length === 1 && i !== 0) item = '0' + item
+				return String(item)
+			})())
 		})
 
-		const [month, day, year] = dateArray
-		this.date = year + '.' + month + '.' + day
-		console.log(this.date)
-		return this
+		return dateArray.join((chalk as AnyIndex)[separator]('.'))
 	}
+
+
+
+
+
 
 	info(text: string = this.text) {
 
@@ -44,7 +70,7 @@ class ServerLog {
 }
 
 class DevLog extends ServerLog {
-	isDev?: booleana
+	isDev?: boolean
 
 	constructor(text: any) {
 		super(text)
