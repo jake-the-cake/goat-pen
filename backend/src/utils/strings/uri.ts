@@ -115,3 +115,7 @@ export class GoatUri extends GoatString {
     return this
   }
 }
+
+export function goatUri(text: string): GoatUri {
+  return new GoatUri(text)
+}
