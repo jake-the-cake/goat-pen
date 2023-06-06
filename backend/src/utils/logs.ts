@@ -34,14 +34,16 @@ class ServerLog {
 		return this
 	}
 
-	private decorate() {
-
+	private decorate(): this {
+		return this
 	}
 
 
+	private setLabel(): this {
+		return this
+	}
 
-
-	getDate(): string {
+	private getDate(): string {
 		const dateArray = backToFrontArray(this.timestamp.toLocaleDateString().split('/'))
 		const {dateTime, separator} = this.colors
 
@@ -55,16 +57,27 @@ class ServerLog {
 		return dateArray.join((chalk as AnyIndex)[separator]('.'))
 	}
 
+	private checkTextValue(text: string): void {
+		if (this.text === '' && text === '') this.text = '** blank log **'
+		else if (this.text !== '' && text !== '') {
+			new ServerLog().info(`** overwritten log value **`)
+			this.text = text
+		}
+		else {
+			this.text = this.text || text
+		}
+	} 
 
 
 
 
-
-	info(text: string = this.text) {
-
+	public info(text: string = '') {
+		this.checkTextValue(text)
+		this.mode = 'INFO'
+		this.setLabel().decorate().createLog()
 	}
 
-	createLog(): void {
+	public createLog(): void {
 		console.log(this.text)
 	}
 }
@@ -94,4 +107,4 @@ export function devLog(text: any, mode?: string): void {
 	if (log.isDev) log.createLog()
 }
 
-new ServerLog().getDate()
+new ServerLog('a').info('f')
