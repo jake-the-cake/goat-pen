@@ -2,7 +2,7 @@ import { NextFunction } from "express"
 import mongoose, { Model, Document } from "mongoose"
 import { devLog, log } from "../../utils/logs"
 import { ApiStatus, ExpressFunction, ReqType, ResType } from "../../types/apiObjects"
-import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
+import { final, onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
 import { CallbackIndex, StringIndex } from "../../types/generic"
 import { quiggleErr } from "../../utils/errors"
 
@@ -17,7 +17,7 @@ export function init(req: ReqType, res: ResType, next: NextFunction) {
 		info: {
 			endpoint: req.originalUrl,
 			method: req.method,
-			ip: req.ip
+			ip: req.socket.remoteAddress || '0.0.0.0'
 		}
 	}
 	// move req body into req object
@@ -27,6 +27,11 @@ export function init(req: ReqType, res: ResType, next: NextFunction) {
 			started: new Date().getTime()
 		}
 	}
+	res.on('finish', function() {
+		// final(req, res)
+		log.log(`response: ${res.api!.status} with status ${res.api!.code}`)
+		devLog(res.api!)
+	})
 	devLog(req.api)
 	// next controller
 	next()

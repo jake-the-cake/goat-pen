@@ -1,6 +1,5 @@
 import { Model } from "mongoose"
 import { ApiStatus, ReqType, ResType } from "../../types/apiObjects"
-import { devLog, log } from "../../utils/logs"
 import { CallbackIndex, StringIndex } from "../../types/generic"
 import { QuiggleErr } from "../../utils/errors"
 
@@ -24,11 +23,9 @@ export function onApiFailure(code: number, error: StringIndex | QuiggleErr | tru
 	final(objs.req, objs.res)
 }
 
-function final(req: ReqType, res: ResType): void {
+export function final(req: ReqType, res: ResType): void {
 	res.api!.info['elapsed'] = stopWatch(req.api!.details.started)
 	res.status(res.api!.code).json(res.api)
-	log.log(`response: ${res.api!.status} with status ${res.api!.code}`)
-	devLog(res.api!)
 }
 
 // maybe a regular util?

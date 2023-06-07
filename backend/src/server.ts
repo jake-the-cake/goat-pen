@@ -28,6 +28,8 @@ app.use('/api', apiRouter)
 
 // function to start server
 function startServer(): void {
+
+	
 	app.listen(serverPort, function(){
 		log.info(`Server running on port ${serverPort}...`)
 	})

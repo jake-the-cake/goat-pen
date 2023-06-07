@@ -128,7 +128,7 @@ class ServerLog {
 		}
 	} 
 
-	private doTheRest(text: any, mode: LoggerMode): void {
+	protected doTheRest(text: any, mode: LoggerMode): void {
 		this.init()
 		this.mode = mode
 		let color: string
@@ -178,13 +178,14 @@ class DevLog extends ServerLog {
 	checkMode(text: any): void {
 		if (config.mode !== 'DEV') return
 		this.text = text
-		this.createLog()
+		this.log()
+		// this.createLog()
 	}
 }
 
 export const log = new ServerLog()
 
 export function devLog(text: any): void {
-	if (typeof text!== 'string') text = JSON.stringify(text, null, 2)
+	if (typeof text!== 'string') text = ('[DATA OBJECT] See below...\n' + JSON.stringify(text, null, 2))
 	new DevLog(text)
 }

@@ -6,7 +6,9 @@ import { log } from '../utils/logs'
 const connectionUri: string = config.mongo.dev
 
 export function connectDB(uri: string, serve: () => void): void {
-  mongoose.connect(uri) // connect database at DB_URI_[mode]
+  mongoose.connect(uri, {
+    retryWrites: true, w: 'majority'
+  }) // connect database at DB_URI_[mode]
     .then(function( db ): void {
       // on success, log connection and start server
       log.info('Database connection established...')
