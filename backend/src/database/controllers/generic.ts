@@ -1,13 +1,13 @@
-import { NextFunction } from "express";
+import { NextFunction } from "express"
 import mongoose, { Model, Document } from "mongoose"
-import { devLog } from "../../utils/logs";
-import { ApiStatus, ExpressFunction, ReqType, ResType } from "../../types/apiObjects";
-import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils";
-import { CallbackIndex, StringIndex } from "../../types/generic";
-import { quiggleErr } from "../../utils/errors";
+import { devLog, log } from "../../utils/logs"
+import { ApiStatus, ExpressFunction, ReqType, ResType } from "../../types/apiObjects"
+import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
+import { CallbackIndex, StringIndex } from "../../types/generic"
+import { quiggleErr } from "../../utils/errors"
 
 export function init(req: ReqType, res: ResType, next: NextFunction) {
-	devLog(`|--> New api request at ` + new Date().toLocaleTimeString() + ' on ' + new Date().toLocaleDateString())
+	log.log(`${req.method} request @ ${req.path}`)
 	// create initial object for api response
 	res.api! = {
 		data: null,
@@ -34,7 +34,7 @@ export function init(req: ReqType, res: ResType, next: NextFunction) {
 
 export function insert(model: Model<any>, validation: CallbackIndex | null = null): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
-		devLog(`Creating a new "${ model.modelName }"...`)
+		log.info(`Creating a new "${ model.modelName }"...`)
 		// create new model instance
 		const api = new model({
 			_id: new mongoose.Types.ObjectId(),
@@ -53,7 +53,7 @@ export function insert(model: Model<any>, validation: CallbackIndex | null = nul
 
 export function all(model: Model<any>, populate?: string[]): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
-		devLog(`Getting all data from "${ model.modelName }"...`)
+		log.info(`Getting all data from "${ model.modelName }"...`)
 		// search and display with error handling
 		model.find<Document>()
 			.then(function(results: Document[]) { onApiSuccess(200, results, {req, res}) })

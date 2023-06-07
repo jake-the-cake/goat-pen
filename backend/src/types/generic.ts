@@ -9,3 +9,11 @@ export interface CallbackIndex {
 export interface AnyIndex {
   [key: string]: any
 }
+
+export interface StringArrayIndex {
+  [key: string]: string[]
+}
+
+export interface StringIndexIndex {
+  [key: string]: StringIndexIndex | string
+}

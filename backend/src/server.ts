@@ -4,6 +4,7 @@ import config from './config'
 import { connectDB } from './database/db'
 import { init } from './database/controllers/generic'
 import { apiRouter } from './routes/router'
+import { log } from './utils/logs'
 
 // get constants from config file
 const serverPort = config.conn.port
@@ -28,6 +29,6 @@ app.use('/api', apiRouter)
 // function to start server
 function startServer(): void {
 	app.listen(serverPort, function(){
-		console.log(`Server running on port ${serverPort}`)
+		log.info(`Server running on port ${serverPort}...`)
 	})
 }
