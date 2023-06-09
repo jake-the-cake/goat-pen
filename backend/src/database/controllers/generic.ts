@@ -1,41 +1,9 @@
-import { NextFunction } from "express"
 import mongoose, { Model, Document } from "mongoose"
-import { devLog, log } from "../../utils/logs"
-import { ApiStatus, ExpressFunction, ReqType, ResType } from "../../types/apiObjects"
-import { final, onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
+import { log } from "../../utils/logs"
+import { ExpressFunction, ReqType, ResType } from "../../types/apiObjects"
+import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
 import { CallbackIndex, StringIndex } from "../../types/generic"
 import { quiggleErr } from "../../utils/errors"
-
-export function init(req: ReqType, res: ResType, next: NextFunction) {
-	log.log(`${req.method} request @ ${req.path}`)
-	// create initial object for api response
-	res.api! = {
-		data: null,
-		error: null,
-		status: ApiStatus.tbd,
-		code: 500,
-		info: {
-			endpoint: req.originalUrl,
-			method: req.method,
-			ip: req.socket.remoteAddress || '0.0.0.0'
-		}
-	}
-	// move req body into req object
-	req.api = {
-		body: { ...req.body },
-		details: {
-			started: new Date().getTime()
-		}
-	}
-	res.on('finish', function() {
-		// final(req, res)
-		log.log(`response: ${res.api!.status} with status ${res.api!.code}`)
-		devLog(res.api!)
-	})
-	devLog(req.api)
-	// next controller
-	next()
-}
 
 export function insert(model: Model<any>, validation: CallbackIndex | null = null): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
