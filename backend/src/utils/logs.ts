@@ -1,6 +1,6 @@
 import config from '../config'
 import chalk from 'chalk'
-import { AnyIndex, StringArrayIndex, StringIndexIndex } from '../types/generic'
+import { AnyIndex, StringIndexIndex } from '../types/generic'
 import { StringIndex } from '../types/generic'
 
 function backToFrontArray(array: any[]): any[] {
@@ -179,13 +179,11 @@ class DevLog extends ServerLog {
 		if (config.mode !== 'DEV') return
 		this.text = text
 		this.log()
-		// this.createLog()
 	}
 }
 
 export const log = new ServerLog()
 
 export function devLog(text: any): void {
-	if (typeof text!== 'string') text = ('[DATA OBJECT] See below...\n' + JSON.stringify(text, null, 2))
 	new DevLog(text)
 }

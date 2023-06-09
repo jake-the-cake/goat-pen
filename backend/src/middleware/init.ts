@@ -24,7 +24,6 @@ export function init(req: ReqType, res: ResType, next: NextFunction) {
 		}
 	}
 	res.on('finish', function() {
-		// final(req, res)
 		log.log(`response: ${res.api!.status} with status ${res.api!.code}`)
 		devLog(res.api!)
 	})
