@@ -19,6 +19,11 @@ export function insert(model: Model<any>, validation: CallbackIndex | null = nul
 		if (validation) {
 			useValidation(validation, { req, res, api })
 			.then(function(result) {
+				if (req.api!.error) {
+					res.api!.error = { ...res.api!.error, ...req.api!.error	}
+					res.api!.code = req.api!.code!
+					result = false
+				}
 				if (result === false) throw onApiFailure(res.api!.code, true, { req, res })
 				else return saveAndExit(api, { req, res })
 			}).catch(function(): void { return })	// to catch the caught THROW error from then()

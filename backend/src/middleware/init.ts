@@ -19,6 +19,8 @@ export function init(req: ReqType, res: ResType, next: NextFunction) {
 	// move req body into req object
 	req.api = {
 		body: {},
+		error: null,
+		data: null,
 		details: {
 			started: new Date().getTime()
 		}

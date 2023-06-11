@@ -1,6 +1,6 @@
 import { Model } from "mongoose"
 import { ApiStatus, ReqType, ResType } from "../../types/apiObjects"
-import { CallbackIndex, StringIndex } from "../../types/generic"
+import { AnyIndex, CallbackIndex, StringIndex } from "../../types/generic"
 import { QuiggleErr } from "../../utils/errors"
 
 export function saveAndExit(item: Model<any> & Document, objs: {req: ReqType, res: ResType}) {

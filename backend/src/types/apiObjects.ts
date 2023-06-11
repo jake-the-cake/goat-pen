@@ -36,8 +36,11 @@ interface ApiRes {
 
 export type ReqType = {
 	api?: {
-		body: StringIndex
-		data?: StringIndex
+		body: StringIndex 
+		data?: StringIndex | null
+		error?: StringIndex | null
+		code?: number
+		status?: ApiStatus
 		callback?: () => void
 		details: {
 			started: number

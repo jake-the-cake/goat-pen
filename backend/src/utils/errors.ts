@@ -1,4 +1,5 @@
-import { ApiErrType, ResType } from "../types/apiObjects"
+import { AnyIndex } from "types/generic"
+import { ApiErrType, ReqType, ResType } from "../types/apiObjects"
 import { Model } from "mongoose"
 
 export class QuiggleErr implements ApiErrType {
@@ -17,26 +18,24 @@ export class QuiggleErr implements ApiErrType {
 	}
 
 	required(): this {
-		this.message = `${this.locTitle} field is required.`
-		this.code = 400
-		return this
+		return this.custom(400, `${this.locTitle} field is required.`)
 	}
 
 	format(): this {
-		this.message = `${this.locTitle} format is invalid.`
-		this.code = 400
-		return this
+		return this.custom(400, `${this.locTitle} format is invalid.`)
 	}
 
 	unique(value: string): this {
-		this.message = `${this.locTitle} '${ value }' is already in use.`
-		this.code = 400
-		return this
+		return this.custom(400, `${this.locTitle} '${ value }' is already in use.`)
 	}
 
 	notfound(params: string): this {
-		this.message = `${params} not found in '${this.location}.'`
-		this.code = 400
+		return this.custom(404, `${params} not found in '${this.location}.'`)
+	}
+
+	custom(code: number, message: string): this {
+		this.message = message
+		this.code = code
 		return this
 	}
 	
@@ -48,16 +47,16 @@ export class QuiggleErr implements ApiErrType {
 		})
 	}
 
-	saveTo(obj: ResType): void {
+	saveTo(obj: ResType | ReqType): void {
 		const location: string = this.location
 		if (obj.api!.error === null) obj.api!.error = {}
+		obj.api!.code = this.code || 500
 		obj.api!.error![location] = {
 			time: this.time,
 			from: this.from,
 			location,
 			message: this.message,
 		}
-		obj.api!.code = this.code || 500
 	}
 }
 
