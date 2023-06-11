@@ -177,8 +177,7 @@ class DevLog extends ServerLog {
 
 	checkMode(text: any): void {
 		if (config.mode !== 'DEV') return
-		this.text = text
-		this.log()
+		this.log(text)
 	}
 }
 

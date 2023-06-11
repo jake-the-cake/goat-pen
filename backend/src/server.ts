@@ -4,7 +4,6 @@ import cors from 'cors'
 import config from './config'
 import { connectDB } from './database/db'
 import { init } from './middleware/init'
-import { cleanData } from './middleware/clean'
 import { apiRouter } from './routes/router'
 import { log } from './utils/logs'
 
@@ -27,7 +26,7 @@ function startServer(): void {
 	app.use(express.static('build'))
 	
 	// custom middleware
-	app.use(init, cleanData)
+	app.use(init)
 	
 	// api router
 	app.use('/api', apiRouter)
