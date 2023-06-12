@@ -1,6 +1,13 @@
-import { GoatString } from "./string"
-import { StringIndex } from "../../types/generic"
-import { UriBitsType } from "../../types/stringObjects"
+import { StringIndex } from "../types/generic"
+import { UriBitsType } from "../types/stringObjects"
+
+export class GoatString {
+  text: string
+  
+  constructor(text: string) {
+    this.text = text
+  }
+}
 
 export class GoatUri extends GoatString {
   uriBits: UriBitsType & StringIndex
@@ -118,4 +125,9 @@ export class GoatUri extends GoatString {
 
 export function goatUri(text: string): GoatUri {
   return new GoatUri(text)
+}
+
+
+export function goatString(text: string) {
+  return new GoatString(text)
 }

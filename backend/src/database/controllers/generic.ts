@@ -5,10 +5,12 @@ import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
 import { CallbackIndex, StringIndex } from "../../types/generic"
 import { quiggleErr } from "../../utils/errors"
 import { cleanData } from "../../middleware/clean"
+import { mask } from "../../utils/encrypt"
 
 export function insert(model: Model<any>, validation: CallbackIndex | null = null): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
 		if (Object.keys(req.body).length) cleanData(model, req)
+		mask(model.schema.paths)
 		log.info(`Creating a new "${ model.modelName }"...`)
 		// create new model instance
 		const api = new model({
