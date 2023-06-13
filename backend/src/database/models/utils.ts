@@ -6,8 +6,8 @@ const quiggleSchema = {
 	t_changed: {
 		type: Number
 	},
-	c_: {
-		type: String,
+	c_dec: {
+		type: Object,
 		required: true
 	}
 }

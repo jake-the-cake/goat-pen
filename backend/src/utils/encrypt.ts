@@ -1,34 +1,30 @@
 import Cryptr from 'cryptr'
-import { AnyIndex } from "../types/generic"
+import { AnyIndex, StringIndex } from "../types/generic"
 import constants from '../config'
-import { printObjectNeat } from './strings'
 
-// console.log(new Cryptr(constants.secret.crypto))
 const cryptr = new Cryptr(constants.secret.crypto)
 
 class GoatMask {
   obj: AnyIndex
   keys?: string[]
+  resultObj?: AnyIndex
 
   constructor(obj: AnyIndex) {
     this.obj = obj
   }
 
-  encode() {
+  encode(): this {
     const x = cryptr.encrypt(this.obj.email ?? 'string')
-    return {
-      c_: cryptr,
+    this.resultObj = {
+      c_dec: cryptr,
       email: x
     }
+    return this
   }
 
   decode() {
 
   }
-
-  // getIv(): string {
-  //   return "iv"
-  // }
 
   ignore(): this {
     this.keys = Object.keys(this.obj).filter(function(key: string): boolean {
@@ -37,14 +33,12 @@ class GoatMask {
     })
     return this
   }
-
-
 }
 
 /** Exports and functions */
 const mask = (obj: AnyIndex) => {
   const cleanObj = new GoatMask(obj).ignore()
-  const { email } = cleanObj.encode()
+  const { email } = cleanObj.encode().resultObj as StringIndex
   console.log(cryptr.decrypt(email))
 }
 

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { goatUri } from '../utils/strings/uri'
+import { goatUri } from '../utils/strings'
 import config from '../config'
 import { log } from '../utils/logs'
 

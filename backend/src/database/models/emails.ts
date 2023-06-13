@@ -12,6 +12,10 @@ const emails = new mongoose.Schema(
       default: true,
       required: [true, 'Active status is required.']
     },
+    // x: {
+    //   type: string,
+    //   required: true
+    // },
     ...quiggleSchema
   },
   {
@@ -20,3 +24,17 @@ const emails = new mongoose.Schema(
 )
 
 export const EmailsModel = mongoose.model('Emails', emails)
+
+const x = new EmailsModel({
+  email: 'email@address.com',
+  c_dec: () => console.log('ok'),
+  t_added: new Date().getTime()
+})
+
+console.log(x)
+x.save()
+EmailsModel.find().then(function(x: any) {
+  console.log(x)
+  const c = x.filter((z: any) => z.c_dec)
+  console.log(c)
+})
