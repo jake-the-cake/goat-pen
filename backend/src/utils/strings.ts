@@ -131,3 +131,5 @@ export function goatUri(text: string): GoatUri {
 export function goatString(text: string) {
   return new GoatString(text)
 }
+
+export const printObjectNeat = (obj: any): string => JSON.stringify(obj, null, 2)

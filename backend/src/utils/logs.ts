@@ -1,7 +1,10 @@
 import config from '../config'
 import chalk from 'chalk'
-import { AnyIndex, StringIndexIndex } from '../types/generic'
-import { StringIndex } from '../types/generic'
+import { AnyIndex, StringIndex,StringIndexIndex } from '../types/generic'
+import { printObjectNeat } from './strings'
+
+/** Use chalk more easily with Typescript and custom methods */
+const Chalk = chalk as AnyIndex
 
 function backToFrontArray(array: any[]): any[] {
 	array.unshift(array[array.length - 1])
@@ -18,49 +21,28 @@ enum LoggerMode {
 
 class ServerLog {
 	text: string
-	timestamp: Date = new Date()
 	time?: string
 	date?: string
 	label?: string
+	timestamp: Date = new Date()
 	mode: LoggerMode = LoggerMode.log
+	DATA_PREFIX: string = '[DATA OBJECT] See below...\n'
 
-	constructor(text: any = '') {
-		this.text = text
-		return this
-	}
+	constructor(text: any = '') {	this.text = text }
 
 	private colors: StringIndexIndex = {
 		DATETIME: 'white',
 		SEPARATOR: 'black',
 		LABELBG: 'bgGreen',
 		LABELTEXT: 'white',
-		[LoggerMode.info]: {
-			BG: 'bgBlue',
-			LABEL: 'white',
-			STRING: 'blue',
-			NONSTRING: 'blueBright'
-		},
-		[LoggerMode.err]: {
-			BG: 'bgRed',
-			LABEL: 'white',
-			STRING: 'red',
-			NONSTRING: 'redBright'
-		},
-		[LoggerMode.warn]: {
-			BG: 'bgYellow',
-			LABEL: 'black',
-			STRING: 'yellow',
-			NONSTRING: 'yellowBright'
-		},
-		[LoggerMode.log]: {
-			BG: 'reset',
-			LABEL: 'reset',
-			STRING: 'reset',
-			NONSTRING: 'reset'
-		}
+		[LoggerMode.info]: { COLOR: 'Blue',	LABEL: 'white' },
+		[LoggerMode.err]: {	COLOR: 'Red',	LABEL: 'white' },
+		[LoggerMode.warn]: { COLOR: 'bgYellow',	LABEL: 'black' },
+		[LoggerMode.log]: 'reset'
 	}
 
-	private init(): void {
+	private init(mode: LoggerMode | null = null): void {
+		if (mode) this.mode = mode
 		this.timestamp = new Date()
 		this.date = this.getDate()
 		this.time = this.getTime()
@@ -68,53 +50,49 @@ class ServerLog {
 
 	private setLabel(): void {
 		const { LABELBG, LABELTEXT, SEPARATOR } = this.colors as StringIndex
-		const { BG, LABEL } = this.colors[this.mode] as StringIndex
+		const { COLOR, LABEL } = this.colors[this.mode] as StringIndex
 
 		const tag = () => {
 			if (this.mode !== LoggerMode.log) return (
-			(chalk as AnyIndex)[BG](
-				' ' + (chalk as AnyIndex)[LABEL](this.mode) + ' ')
+				Chalk['bg' + COLOR](' ' + Chalk[LABEL](this.mode) + ' ')
 			)
 			else return ' > '
 		}
-		this.label = (chalk as AnyIndex)[LABELBG](
-			(chalk as AnyIndex)[LABELTEXT](
-				this.date
-				+ (chalk as AnyIndex)[SEPARATOR]('@')
-				+ this.time
-				+ tag()
-			)
+		this.label = Chalk[LABELBG](
+			Chalk[LABELTEXT](this.date	+ Chalk[SEPARATOR]('@')	+ this.time	+ tag())
 		) + ' '
+	}
 
-		return this.createLog()
+	private addLeadingZero(arr: {item: string | number, i: number}): string {
+		return ((): string => {
+			if (String(arr.item).split('').length === 1 && arr.i !== 0) arr.item = '0' + arr.item
+			return String(arr.item)
+		})()
 	}
 
 	private getDate(): string {
-		const dateArray = backToFrontArray(this.timestamp.toLocaleDateString().split('/'))
 		const {DATETIME, SEPARATOR} = this.colors as StringIndex
 
-		dateArray.forEach(function(item: string | number, i: number) {
-			dateArray[i] = (chalk as AnyIndex)[DATETIME]((function(): string {
-				if (String(item).split('').length === 1 && i !== 0) item = '0' + item
-				return String(item)
-			})())
+		const dateArray = backToFrontArray(this.timestamp.toLocaleDateString().split('/'))
+
+		dateArray.forEach((item: string | number, i: number) => {
+			dateArray[i] = Chalk[DATETIME](this.addLeadingZero({item, i}))
 		})
 
-		return dateArray.join((chalk as AnyIndex)[SEPARATOR]('-'))
+		return dateArray.join(Chalk[SEPARATOR]('-'))
 	}
 
 	private getTime(): string {
 		const {DATETIME, SEPARATOR} = this.colors as StringIndex
+
 		const [time, m] = this.timestamp.toLocaleTimeString().split(' ')
 		const timeArray = time.split(':')
-		timeArray.forEach(function(item: string | number, i: number) {
-			timeArray[i] = (chalk as AnyIndex)[DATETIME]((function(): string {
-				if (String(item).split('').length === 1) item = '0' + item
-				return String(item)
-			})())
+
+		timeArray.forEach((item: string | number, i: number) => {
+			timeArray[i] = Chalk[DATETIME](this.addLeadingZero({item, i}))
 		})
-		return	timeArray.join((chalk as AnyIndex)[SEPARATOR](':')) + 
-			(chalk as AnyIndex)[SEPARATOR](m) + ' '
+
+		return	timeArray.join(Chalk[SEPARATOR](':')) +  Chalk[SEPARATOR](m) + ' '
 	}
 
 	private checkTextValue(text: string): void {
@@ -123,44 +101,45 @@ class ServerLog {
 			new ServerLog().info(`** overwritten log value **`)
 			this.text = text
 		}
-		else {
-			this.text = this.text || text
+		else this.text = this.text || text
+	}
+
+	private setThemeOrReset(theme: StringIndex): { STRING: string, NONSTRING: string } {
+		if (typeof theme === 'string')  return { // normal log
+			STRING: 'reset', NONSTRING: 'reset'
 		}
-	} 
+		return { // themed log
+			STRING: theme.COLOR.toLowerCase(), NONSTRING: theme.COLOR.toLowerCase() + 'Bright'
+		}
+	}
+
+	private setDataPrefix({STRING, NONSTRING}: { STRING: string, NONSTRING: string }): void {
+		this.text = Chalk[((t: any = this.text): string => {
+			switch (typeof this.text) {
+				case 'string': return STRING
+				default:
+					this.text = printObjectNeat(this.text)
+					if (this.text !== 'null') this.text = Chalk[STRING]( this.DATA_PREFIX ) + this.text
+					return NONSTRING
+			}
+		})()](this.text)
+	}
 
 	protected doTheRest(text: any, mode: LoggerMode): void {
-		this.init()
-		this.mode = mode
-		let color: string
+		this.init(mode)
 		this.checkTextValue(text)
-		if (typeof this.text === 'string') color = (this.colors[mode] as StringIndex).STRING
-		else {
-			this.text = (chalk as AnyIndex)[(this.colors[mode] as StringIndex).STRING]('[DATA OBJECT] See below...\n' + JSON.stringify(this.text, null, 2))
-			color = (this.colors[mode] as StringIndex).NONSTRING
-		}
-		this.text = (chalk as AnyIndex)[color](this.text)
+		this.setDataPrefix(this.setThemeOrReset(this.colors[this.mode] as StringIndex))
 		this.setLabel()
+		return this.createLog()
 	}
 
-	public info(text: any = ''): this {
-		this.doTheRest(text, LoggerMode.info)
-		return this
-	}
+	public info(text: any = ''): void {this.doTheRest(text, LoggerMode.info)}
 
-	public err(text: any = ''): this {
-		this.doTheRest(text, LoggerMode.err)
-		return this
-	}
+	public err(text: any = ''): void {this.doTheRest(text, LoggerMode.err)}
 
-	public warn(text: any = ''): this {
-		this.doTheRest(text, LoggerMode.warn)
-		return this
-	}
+	public warn(text: any = ''): void {this.doTheRest(text, LoggerMode.warn)}
 
-	public log(text: any = ''): this {
-		this.doTheRest(text, LoggerMode.log)
-		return this
-	}
+	public log(text: any = ''): void {this.doTheRest(text, LoggerMode.log)}
 
 	public createLog(): void {
 		console.log((this.label || '') + this.text)
@@ -168,21 +147,21 @@ class ServerLog {
 	}
 }
 
+/** DevLog class for dev-only logging */
 class DevLog extends ServerLog {
-
-	constructor(text: any) {
-		super(text)
-		this.checkMode(text)
-	}
-
-	checkMode(text: any): void {
+	constructor(text: any, type: string) {
+		super()
 		if (config.mode !== 'DEV') return
-		this.log(text)
+		(this as AnyIndex)[type](text)
 	}
 }
 
-export const log = new ServerLog()
+/** Exports and Functions */
+const log: ServerLog = new ServerLog()
 
-export function devLog(text: any): void {
-	new DevLog(text)
+function devLog(text: any, type: string = 'log'): void {
+	if (config.mode !== 'DEV') return
+	(new ServerLog(text) as AnyIndex)[type]()
 }
+
+export { log, devLog }

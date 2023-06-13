@@ -5,16 +5,19 @@ import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
 import { CallbackIndex, StringIndex } from "../../types/generic"
 import { quiggleErr } from "../../utils/errors"
 import { cleanData } from "../../middleware/clean"
-import { mask } from "../../utils/encrypt"
+import { mask, unmask } from "../../utils/encrypt"
 
 export function insert(model: Model<any>, validation: CallbackIndex | null = null): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
 		if (Object.keys(req.body).length) cleanData(model, req)
-		mask(model.schema.paths)
+		mask(res.api!.data ?? {email: 'dummy'})
+		// unmask(model.schema.paths)
 		log.info(`Creating a new "${ model.modelName }"...`)
 		// create new model instance
 		const api = new model({
 			_id: new mongoose.Types.ObjectId(),
+			t_added: req.api!.info.started,
+			c_: 'x',
 			...req.api!.body
 		})
 		// run provided validation

@@ -4,6 +4,8 @@ dotenv.config()
 
 const PORT: string | number = process.env.PORT || 6047
 
+const CRYPTO_CODE: string = process.env.CRYPTO_CODE || ''
+
 const APP_MODE: string = process.env.APP_MODE || ''
 
 const DB_URI_DEV: string = process.env.DB_URI_DEV || ''
@@ -18,6 +20,9 @@ const constants: AnyIndex = {
   },
   conn: {
     port: PORT
+  },
+  secret: {
+    crypto: CRYPTO_CODE
   },
   mode: APP_MODE
 }

@@ -13,6 +13,8 @@ interface ApiInfo {
 	method: string
 	ip: string
 	elapsed?: string
+	date: string
+	time: string
 }
 
 interface ApiError {
@@ -42,7 +44,7 @@ export type ReqType = {
 		code?: number
 		status?: ApiStatus
 		callback?: () => void
-		details: {
+		info: {
 			started: number
 			model?: Model<any>
 			garbage?: StringIndex

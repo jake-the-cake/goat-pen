@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { quiggleSchema } from "./utils";
 
 const emails = new mongoose.Schema(
   {
@@ -10,10 +11,10 @@ const emails = new mongoose.Schema(
       type: Boolean,
       default: true,
       required: [true, 'Active status is required.']
-    }
+    },
+    ...quiggleSchema
   },
   {
-    timestamps: true,
     versionKey: false
   }
 )
