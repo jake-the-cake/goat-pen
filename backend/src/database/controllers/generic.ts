@@ -5,7 +5,7 @@ import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
 import { CallbackIndex, StringIndex } from "../../types/generic"
 import { quiggleErr } from "../../utils/errors"
 import { cleanData } from "../../middleware/clean"
-import { mask, unmask } from "../../utils/encrypt"
+import { mask } from "../../utils/encrypt"
 
 export function insert(model: Model<any>, validation: CallbackIndex | null = null): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
