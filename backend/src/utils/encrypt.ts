@@ -2,7 +2,6 @@
 import { Document } from "mongoose"
 import CryptoJS from 'crypto-js'
 import constants from '../config'
-import { devLog, log } from "./logs"
 import { AnyIndex, StringIndexIndex } from "../types/generic"
 
 enum EncodeMode {
@@ -16,23 +15,23 @@ interface GoatMaskOptions {
 }
 
 class GoatMask {
-  options: GoatMaskOptions
+  options?: GoatMaskOptions
   private mode: EncodeMode
-  private keys: {
+  private keys?: {
     ignore: string[]
     convert: string[]
     boolean: string[]
   }
-  private in: Document | AnyIndex | any
-  private out: AnyIndex
+  private in?: Document | AnyIndex | any
+  private out?: AnyIndex | string
   public static data: () => StringIndexIndex
 
   constructor(obj: Document & string & any, mode: EncodeMode, options?: GoatMaskOptions) {
-    if (typeof obj === 'string') this.in = { result: obj as string }
-    else if (obj._doc) { this.in = obj._doc}
+    this.mode = mode
+    if (typeof obj === 'string') return this.handleString(obj)
+    if (obj._doc) { this.in = obj._doc}
     else this.in = obj
     this.out = {}
-    this.mode = mode
     this.options = {
       ignore: [],
       booleanPrefix: 'is',
@@ -46,6 +45,11 @@ class GoatMask {
     return this.split()
   }
 
+  handleString(value: string): this {
+    this.out = this.convert(value).toString(this.utf())
+    return this
+  }
+
   /** Conversion Method */
   private convert(value: string): CryptoJS.lib.CipherParams | CryptoJS.lib.WordArray {
     return (CryptoJS.AES as AnyIndex)[this.mode](value, constants.secret.crypto)
@@ -53,19 +57,24 @@ class GoatMask {
 
   /** Return boolean to original form */
   private toBoolean(): void {
-    this.keys.boolean.forEach((key: string) => {
-      this.out[key] = (() => {
-        switch (this.out[key]) {
+    this.keys!.boolean.forEach((key: string) => {
+      (this.out as AnyIndex)[key] = (() => {
+        switch ((this.out as AnyIndex)[key]) {
           case 'true': return true
           default: return false
         }
       })()
     })
   }
+
+  /** Check if UTF encoding is needed */
+  private utf(): any | undefined {
+    if (this.mode === EncodeMode.d) return CryptoJS.enc.Utf8
+  }
   
   /** Return Data */
-  data(): StringIndexIndex {
-    if (this.mode === EncodeMode.d) this.toBoolean()
+  public data(): StringIndexIndex {
+    if (this.mode === EncodeMode.d && typeof this.out !== 'string') this.toBoolean()
     return this.out as StringIndexIndex
   }
 
@@ -74,23 +83,21 @@ class GoatMask {
     Object.keys(this.in).forEach((key: string) => {
       if (key.slice(0,2).includes('_')) this.keys?.ignore.push(key)
       else this.keys?.convert.push(key)
-      if (key.slice(0,2) === this.options.booleanPrefix) this.keys.boolean.push(key)
+      if (key.slice(0,2) === this.options!.booleanPrefix) this.keys!.boolean.push(key)
     })
     return this.cycle()
   }
 
   private cycle(): this {
-    let utf: any | undefined
-    if (this.mode === EncodeMode.d) utf = CryptoJS.enc.Utf8
-    this.keys.convert.forEach((key: string) => {
-      this.out[key] = this.convert(String((this.in as AnyIndex)[key])).toString(utf)
+    this.keys!.convert.forEach((key: string) => {
+      (this.out as AnyIndex)[key] = this.convert(String((this.in as AnyIndex)[key])).toString(this.utf())
     })
     return this.unignore()
   }
 
   private unignore(): this {
-    this.keys.ignore.forEach((key: string) => {
-      this.out[key] = (this.in as AnyIndex)[key]
+    this.keys!.ignore.forEach((key: string) => {
+      (this.out as AnyIndex)[key] = (this.in as AnyIndex)[key]
     })
     return this
   }
