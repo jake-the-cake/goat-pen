@@ -37,7 +37,7 @@ class ServerLog {
 		LABELTEXT: 'white',
 		[LoggerMode.info]: { COLOR: 'Blue',	LABEL: 'white' },
 		[LoggerMode.err]: {	COLOR: 'Red',	LABEL: 'white' },
-		[LoggerMode.warn]: { COLOR: 'bgYellow',	LABEL: 'black' },
+		[LoggerMode.warn]: { COLOR: 'Yellow',	LABEL: 'black' },
 		[LoggerMode.log]: 'reset'
 	}
 

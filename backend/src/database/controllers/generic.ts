@@ -1,7 +1,7 @@
 import mongoose, { Model, Document } from "mongoose"
 import { cleanData } from "../../middleware/clean"
 import { ExpressFunction, ReqType, ResType } from "../../types/apiObjects"
-import { CallbackIndex, StringIndex } from "../../types/generic"
+import { CallbackIndex, StringIndex, StringIndexIndex } from "../../types/generic"
 import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
 import { quiggleErr } from "../../utils/errors"
 import { mask, unmask } from "../../utils/encrypt"
@@ -39,7 +39,7 @@ function insert(model: Model<any>, validation: CallbackIndex | null = null): Exp
 	}
 }
 
-function all(model: Model<any>, populate?: string[]): ExpressFunction {
+function collectAll(model: Model<any>, populate?: string[]): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
 		log.info(`Getting ALL from ${ modelTag(model.modelName) }`)
 		// search and display with error handling
@@ -64,9 +64,23 @@ function change(model: Model<any>, populate?: string[]): ExpressFunction {
 	}
 }
 
-function deleteAll(model: Model<any>): ExpressFunction {
+function remove(model: Model<any>, search: StringIndexIndex = {}): ExpressFunction {
+	return function(req: ReqType, res: ResType) {
+		if (Object.keys(req.body).length) cleanData(model, req)
+		log.info(`Removing document from ${ modelTag(model.modelName) }`)
+		model.find({_id: req.body.id})
+			.then((result: Document & any) => {
+				model.deleteOne({_id: (req.body.id)})
+					.then(() => {
+						onApiSuccess(200, {deleted: `Deleted document from [MODEL||'${model.modelName}']`} as any, {req, res})
+					})
+			})
+	}
+}
+
+function removeAll(model: Model<any>): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
-		log.info(`Deleting ALL from ${modelTag(model.modelName)}`)
+		log.info(`Removing ALL from ${modelTag(model.modelName)}`)
 		model.deleteMany()
 			.then(() => {
 				onApiSuccess(200, {deleted: `Contents of [MODEL||'${model.modelName}'] have been removed`} as any, {req, res})
@@ -76,7 +90,8 @@ function deleteAll(model: Model<any>): ExpressFunction {
 
 export {
 	insert,
-	all,
+	collectAll,
 	change,
-	deleteAll
+	remove,
+	removeAll
 }

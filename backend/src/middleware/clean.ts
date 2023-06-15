@@ -3,12 +3,13 @@ import { log } from "../utils/logs";
 import { Model } from "mongoose";
 import { AnyIndex } from "../types/generic";
 import { quiggleErr } from "../utils/errors";
+import { fieldTag } from "../utils/messages";
 
 export function cleanData(model: Model<any>, req: ReqType): void {
   const modelSchema: AnyIndex = model.schema.paths
 
   Object.keys(req.body).forEach(function(key: string): void | AnyIndex {
-    if (!Object.keys(modelSchema).includes(key)) return log.warn(`Ignored invalid field '${key}'`)
+    if (!Object.keys(modelSchema).includes(key)) return log.warn(`Ignored invalid ${fieldTag(key)}`)
     const characterArray = req.body[key].split('')
     characterArray.forEach(function(char: string, i: number): void {
       if (char === ' ') return

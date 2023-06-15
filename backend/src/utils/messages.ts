@@ -1,7 +1,22 @@
 import chalk from "chalk"
+import { AnyIndex } from "../types/generic"
 
-function modelTag(text: string): string {
-	return chalk.bgCyan(chalk.magenta('MODEL') + chalk.black('>') + chalk.white('\'' + text + '\''))
+const Chalk = chalk as AnyIndex
+
+function objectTag(text: string, type: string, color?: {bg?: string, label?: string, arrow?: string, name?: string}): string {
+	return Chalk[color?.bg ?? 'bgCyan'](
+		Chalk[color?.arrow ?? 'black']('<')
+		+ Chalk[color?.label ?? 'magenta'](type) 
+		+ Chalk[color?.arrow ?? 'black']('>')
+		+ Chalk[color?.name ?? 'white']('\'' + text + '\''))
 }
 
-export { modelTag }
+function modelTag(text: string): string {
+	return objectTag(text, 'MODEL')
+}
+
+function fieldTag(text: string): string {
+	return objectTag(text, 'FIELD', {bg: 'bgGreen'})
+}
+
+export { modelTag, fieldTag, objectTag }
