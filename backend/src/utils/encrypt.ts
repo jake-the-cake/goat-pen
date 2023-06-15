@@ -1,70 +1,113 @@
 // import Cryptr from 'cryptr'
-import { StringIndexIndex } from "../types/generic"
-import constants from '../config'
+import { Document } from "mongoose"
 import CryptoJS from 'crypto-js'
+import constants from '../config'
+import { devLog, log } from "./logs"
+import { AnyIndex, StringIndexIndex } from "../types/generic"
+
+enum EncodeMode {
+  e = 'encrypt',
+  d = 'decrypt'
+}
+
+interface GoatMaskOptions {
+  ignore?: string | string[] | []
+  booleanPrefix?: string
+}
 
 class GoatMask {
-  keys?: string[]
-  in?: StringIndexIndex
-  out?: StringIndexIndex
-  secret: string = constants.secret.crypto
+  options: GoatMaskOptions
+  private mode: EncodeMode
+  private keys: {
+    ignore: string[]
+    convert: string[]
+    boolean: string[]
+  }
+  private in: Document | AnyIndex | any
+  private out: AnyIndex
+  public static data: () => StringIndexIndex
 
-  constructor(obj: string | StringIndexIndex) {
-    if (typeof obj === 'string') this.in = { result: obj }
+  constructor(obj: Document & string & any, mode: EncodeMode, options?: GoatMaskOptions) {
+    if (typeof obj === 'string') this.in = { result: obj as string }
+    else if (obj._doc) { this.in = obj._doc}
     else this.in = obj
+    this.out = {}
+    this.mode = mode
+    this.options = {
+      ignore: [],
+      booleanPrefix: 'is',
+      ...options
+    }
+    this.keys = {
+      ignore: [...this.options.ignore!],
+      convert: [],
+      boolean: []
+    }
+    return this.split()
+  }
+
+  /** Conversion Method */
+  private convert(value: string): CryptoJS.lib.CipherParams | CryptoJS.lib.WordArray {
+    return (CryptoJS.AES as AnyIndex)[this.mode](value, constants.secret.crypto)
+  }
+
+  /** Return boolean to original form */
+  private toBoolean(): void {
+    this.keys.boolean.forEach((key: string) => {
+      this.out[key] = (() => {
+        switch (this.out[key]) {
+          case 'true': return true
+          default: return false
+        }
+      })()
+    })
+  }
+  
+  /** Return Data */
+  data(): StringIndexIndex {
+    if (this.mode === EncodeMode.d) this.toBoolean()
+    return this.out as StringIndexIndex
+  }
+
+  /** Private Algorithm Methods */
+  private split(): this {
+    Object.keys(this.in).forEach((key: string) => {
+      if (key.slice(0,2).includes('_')) this.keys?.ignore.push(key)
+      else this.keys?.convert.push(key)
+      if (key.slice(0,2) === this.options.booleanPrefix) this.keys.boolean.push(key)
+    })
+    return this.cycle()
+  }
+
+  private cycle(): this {
+    let utf: any | undefined
+    if (this.mode === EncodeMode.d) utf = CryptoJS.enc.Utf8
+    this.keys.convert.forEach((key: string) => {
+      this.out[key] = this.convert(String((this.in as AnyIndex)[key])).toString(utf)
+    })
+    return this.unignore()
+  }
+
+  private unignore(): this {
+    this.keys.ignore.forEach((key: string) => {
+      this.out[key] = (this.in as AnyIndex)[key]
+    })
+    return this
   }
 }
 
-export function mask(value: string | StringIndexIndex): StringIndexIndex {
-  const x = new GoatMask('hi').in!
-  console.log(x)
-  return x
+/** Exports and Functions */
+function doMagic(value: any, options: any, mode: any): StringIndexIndex {
+  if (options?.ignore && typeof options.ignore === 'string') options.ignore = [options.ignore]
+  return new GoatMask(value, mode, options).data()
 }
 
+function mask(value: string | Document, options?: GoatMaskOptions): StringIndexIndex {
+  return doMagic(value, options, EncodeMode.e)
+}
 
-// const cryptr = new Cryptr(constants.secret.crypto)
+function unmask(value: string | Document, options?: GoatMaskOptions): StringIndexIndex {
+  return doMagic(value, options, EncodeMode.d)
+}
 
-// class GoatMask {
-//   obj: AnyIndex
-//   keys?: string[]
-//   resultObj?: AnyIndex
-
-//   constructor(obj: AnyIndex) {
-//     this.obj = obj
-//   }
-
-//   encode(): this {
-//     // const x = cryptr.encrypt(this.obj.email ?? 'string')
-//     this.resultObj = {
-//       c_dec: cryptr,
-//       email: x
-//     }
-//     return this
-//   }
-
-//   decode() {
-
-//   }
-
-//   ignore(): this {
-//     this.keys = Object.keys(this.obj).filter(function(key: string): boolean {
-//       if (key.split('').slice(0,2).includes('_')) return false
-//       return true
-//     })
-//     return this
-//   }
-// }
-
-// /** Exports and functions */
-// const mask = (obj: AnyIndex) => {
-//   const cleanObj = new GoatMask(obj).ignore()
-//   const { email } = cleanObj.encode().resultObj as StringIndex
-//   console.log(cryptr.decrypt(email))
-// }
-
-// const unmask = (obj: AnyIndex) => {
-  
-//   console.log(new GoatMask(obj).ignore().keys)
-// }
-
-// export { mask, unmask }
+export { mask, unmask }

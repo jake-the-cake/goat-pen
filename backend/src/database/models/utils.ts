@@ -4,11 +4,8 @@ const quiggleSchema = {
 		required: true
 	},
 	t_changed: {
-		type: Number
-	},
-	c_dec: {
-		type: Object,
-		required: true
+		type: Number,
+		default: -1
 	}
 }
 

@@ -1,13 +1,13 @@
 import { Model } from "mongoose"
 import { ApiStatus, ReqType, ResType } from "../../types/apiObjects"
-import { AnyIndex, CallbackIndex, StringIndex } from "../../types/generic"
+import { CallbackIndex, StringIndex } from "../../types/generic"
 import { QuiggleErr } from "../../utils/errors"
-import { mask } from "../../utils/encrypt"
 
 function saveAndExit(item: Model<any> & Document, objs: {req: ReqType, res: ResType}) {
-	// mask(objs.res.api!.data as AnyIndex)
 	return (item as any).save()
-		.then(function() { onApiSuccess(201, item as any, { req: objs!.req, res: objs!.res }) })
+	.then(function() {
+			onApiSuccess(201, item as any, { req: objs!.req, res: objs!.res })
+		})
 			.catch(function(err: StringIndex) { onApiFailure(500, err, { req: objs.req, res: objs.res })})		
 }
 

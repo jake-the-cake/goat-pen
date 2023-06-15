@@ -1,18 +1,21 @@
 import mongoose, { Model, Document } from "mongoose"
-import { log } from "../../utils/logs"
-import { ExpressFunction, ReqType, ResType } from "../../types/apiObjects"
-import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
-import { CallbackIndex, StringIndex } from "../../types/generic"
-import { quiggleErr } from "../../utils/errors"
 import { cleanData } from "../../middleware/clean"
-import { mask } from "../../utils/encrypt"
+import { ExpressFunction, ReqType, ResType } from "../../types/apiObjects"
+import { CallbackIndex, StringIndex } from "../../types/generic"
+import { onApiFailure, onApiSuccess, saveAndExit, useValidation } from "./utils"
+import { quiggleErr } from "../../utils/errors"
+import { mask, unmask } from "../../utils/encrypt"
+import { log } from "../../utils/logs"
+import { modelTag } from "../../utils/messages"
 
-export function insert(model: Model<any>, validation: CallbackIndex | null = null): ExpressFunction {
+function encodeSchema({req, res}: {req: ReqType, res: ResType}, api: Model<any> & Document & any ): void {
+	return saveAndExit(api.overwrite(mask(api)), { req, res })
+}
+
+function insert(model: Model<any>, validation: CallbackIndex | null = null): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
 		if (Object.keys(req.body).length) cleanData(model, req)
-		mask(res.api!.data ?? {email: 'dummy'})
-		// unmask(model.schema.paths)
-		log.info(`Creating a new "${ model.modelName }"...`)
+		log.info(`Creating new ${ modelTag(model.modelName) }`)
 		// create new model instance
 		const api = new model({
 			_id: new mongoose.Types.ObjectId(),
@@ -30,24 +33,27 @@ export function insert(model: Model<any>, validation: CallbackIndex | null = nul
 					result = false
 				}
 				if (result === false) throw onApiFailure(res.api!.code, true, { req, res })
-				else return saveAndExit(api, { req, res })
+				else return encodeSchema({ req, res }, api)
 			}).catch(function(): void { return })	// to catch the caught THROW error from then()
-		} else return saveAndExit(api, { req, res })
+		} else return encodeSchema({ req, res }, api)
 	}
 }
 
-export function all(model: Model<any>, populate?: string[]): ExpressFunction {
+function all(model: Model<any>, populate?: string[]): ExpressFunction {
 	return function(req: ReqType, res: ResType): void {
-		log.info(`Getting all data from "${ model.modelName }"...`)
+		log.info(`Getting ALL from ${ modelTag(model.modelName) }`)
 		// search and display with error handling
 		model.find<Document>()
-			.then(function(results: Document[]) { onApiSuccess(200, results, {req, res}) })
+			.then(function(results: Document[] & any) {
+				results.forEach((item: Document & any, i: number) => results[i] = unmask(item))
+				onApiSuccess(200, results, {req, res}) }
+			)
 			.catch(function(err: StringIndex) { onApiFailure(500, err, {req, res}) })
 	}
 }
 
-export function change(model: Model<any>, populate?: string[]): ExpressFunction {
-	return function(req: ReqType, res: ResType) {
+function change(model: Model<any>, populate?: string[]): ExpressFunction {
+	return function(req: ReqType, res: ResType): void {
 		const _id = req.api!.body.id
 		model.find<Document>({_id})
 			.then(function(result: Document[]) { 
@@ -56,4 +62,21 @@ export function change(model: Model<any>, populate?: string[]): ExpressFunction 
 			})
 			.catch(function(err: StringIndex) { onApiFailure(500, err, {req, res}) })
 	}
+}
+
+function deleteAll(model: Model<any>): ExpressFunction {
+	return function(req: ReqType, res: ResType): void {
+		log.info(`Deleting ALL from ${modelTag(model.modelName)}`)
+		model.deleteMany()
+			.then(() => {
+				onApiSuccess(200, {deleted: `Contents of [MODEL||'${model.modelName}'] have been removed`} as any, {req, res})
+			})
+	}
+}
+
+export {
+	insert,
+	all,
+	change,
+	deleteAll
 }
