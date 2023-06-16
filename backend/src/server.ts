@@ -7,6 +7,11 @@ import { init } from './middleware/init'
 import { apiRouter } from './routes/router'
 import { log } from './utils/logs'
 
+import './auth/server'
+import './testing/server'
+import { goatString } from './utils/strings'
+console.log(goatString.cap('hoWdy'))
+
 /** get constants from config file */
 const serverPort = config.conn.port
 const databaseUri = config.mongo.dev

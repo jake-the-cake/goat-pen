@@ -1,11 +1,47 @@
-import { StringIndex } from "../types/generic"
+import { AnyIndex, CallbackIndex, StringIndex } from "../types/generic"
 import { UriBitsType } from "../types/stringObjects"
 
 export class GoatString {
-  text: string
+  value: string = ''
   
-  constructor(text: string) {
-    this.text = text
+  constructor(value: string = "") {
+    this.setValue(value)
+  }
+
+  private setValue(value: string): void {
+    this.value = value
+  }
+
+  private updateValue(value?: string): string {
+    if (value) this.setValue(value)
+    return this.value
+  }
+
+  private returnString(value: string | undefined, method: string): string {
+    value = this.updateValue(value)
+    return value !== '' ? (value[<any>method] as any)() : ""
+  }
+
+  /**
+   * cap
+   */
+  public cap(value?: string): string {
+    value = this.updateValue(value)
+    return this.upper(value[0]) + this.lower(value.slice(1))
+  }
+
+  /**
+   * upper
+   */
+  public upper(value?: string): string {
+    return this.returnString(value, 'toUpperCase')
+  }
+
+  /**
+   * lower
+   */
+  public lower(value?: string) {
+    return this.returnString(value, 'toLowerCase')    
   }
 }
 
@@ -123,13 +159,18 @@ export class GoatUri extends GoatString {
   }
 }
 
+/** Exports and Functions */
 export function goatUri(text: string): GoatUri {
   return new GoatUri(text)
 }
 
 
-export function goatString(text: string) {
-  return new GoatString(text)
-}
+// export function goatString(text: string) {
+//   return new GoatString(text)
+// }
+
+const goatString = new GoatString()
 
 export const printObjectNeat = (obj: any): string => JSON.stringify(obj, null, 2)
+
+export { goatString }
