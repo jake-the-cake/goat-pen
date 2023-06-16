@@ -9,8 +9,11 @@ import { log } from './utils/logs'
 
 import './auth/server'
 import './testing/server'
-import { goatString } from './utils/strings'
+import goatString from './utils/strings'
+import goatUrl from './utils/urls'
 console.log(goatString.cap('hoWdy'))
+console.log(goatUrl)
+
 
 /** get constants from config file */
 const serverPort = config.conn.port
