@@ -16,6 +16,7 @@ enum LoggerMode {
 	info = 'INFO',
 	err = 'ERROR',
 	warn = 'WARNING',
+	test = 'TEST',
 	log = 'LOG'
 }
 
@@ -38,6 +39,7 @@ class ServerLog {
 		[LoggerMode.info]: { COLOR: 'Blue',	LABEL: 'white' },
 		[LoggerMode.err]: {	COLOR: 'Red',	LABEL: 'white' },
 		[LoggerMode.warn]: { COLOR: 'Yellow',	LABEL: 'black' },
+		[LoggerMode.test]: { COLOR: 'White',	LABEL: 'black' },
 		[LoggerMode.log]: 'reset'
 	}
 
@@ -139,6 +141,8 @@ class ServerLog {
 
 	public warn(text: any = ''): void {this.doTheRest(text, LoggerMode.warn)}
 
+	public test(text: any = ''): void {this.doTheRest(text, LoggerMode.test)}
+
 	public log(text: any = ''): void {this.doTheRest(text, LoggerMode.log)}
 
 	public createLog(): void {
@@ -147,21 +151,24 @@ class ServerLog {
 	}
 }
 
-/** DevLog class for dev-only logging */
-class DevLog extends ServerLog {
-	constructor(text: any, type: string) {
-		super()
-		if (config.mode !== 'DEV') return
-		(this as AnyIndex)[type](text)
-	}
-}
-
 /** Exports and Functions */
 const log: ServerLog = new ServerLog()
 
 function devLog(text: any, type: string = 'log'): void {
-	if (config.mode !== 'DEV') return
+	if (config.constants.mode !== 'DEV') return
 	(new ServerLog(text) as AnyIndex)[type]()
 }
 
-export { log, devLog }
+function testLog(text: string, color: string): void {
+	new ServerLog((Chalk as AnyIndex)[color](text)).test()
+}
+
+function testPass(text: string): void {
+	testLog('Pass > ' + text, 'green')
+}
+
+function testFail(text: string): void {
+	testLog('Fail > ' + text, 'red')
+}
+
+export { log, devLog, testPass, testFail }

@@ -9,15 +9,12 @@ import { log } from './utils/logs'
 
 import './auth/server'
 import './testing/server'
-import goatString from './utils/strings'
 import goatUrl from './utils/urls'
-console.log(goatString.cap('hoWdy'))
-console.log(goatUrl)
-
+goatUrl
 
 /** get constants from config file */
-const serverPort = config.conn.port
-const databaseUri = config.mongo.dev
+const serverPort = config.constants.conn.port
+const databaseUri = config.constants.mongo.dev
 
 /** connect db & connect server */
 connectDB(databaseUri, startServer)

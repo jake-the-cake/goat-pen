@@ -27,4 +27,8 @@ const constants: AnyIndex = {
   mode: APP_MODE
 }
 
-export default constants
+const defaults: AnyIndex = {
+  isTest: false
+}
+
+export default { constants, defaults }

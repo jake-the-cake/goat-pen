@@ -1,9 +1,8 @@
 import mongoose from 'mongoose'
-import { goatUri } from '../utils/strings'
 import config from '../config'
 import { log } from '../utils/logs'
 
-const connectionUri: string = config.mongo.dev
+const connectionUri: string = config.constants.mongo.dev
 
 export function connectDB(uri: string, serve: () => void): void {
   mongoose.connect(uri, {
@@ -16,7 +15,7 @@ export function connectDB(uri: string, serve: () => void): void {
     })
     .catch(function( err ): void {
       // on failed connection, log error and try connection again
-      log.err(`Cannot connect to ${goatUri(uri).displayUri()}`)
+      log.err(`Cannot connect to ${uri}`)
       connectDB(connectionUri, serve)
     })
 }
