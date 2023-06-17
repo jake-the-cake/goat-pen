@@ -1,7 +1,7 @@
 // import Cryptr from 'cryptr'
 import { Document } from "mongoose"
 import CryptoJS from 'crypto-js'
-import constants from '../config'
+import config from '../config'
 import { AnyIndex, StringIndexIndex } from "../types/generic"
 
 enum EncodeMode {
@@ -52,7 +52,7 @@ class GoatMask {
 
   /** Conversion Method */
   private convert(value: string): CryptoJS.lib.CipherParams | CryptoJS.lib.WordArray {
-    return (CryptoJS.AES as AnyIndex)[this.mode](value, constants.secret.crypto)
+    return (CryptoJS.AES as AnyIndex)[this.mode](value, config.constants.secret.crypto)
   }
 
   /** Return boolean to original form */
