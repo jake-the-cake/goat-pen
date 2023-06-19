@@ -109,6 +109,11 @@ export class GoatString implements IGoatString {
       }
     )
   }
+
+  protected runTests(callback: () => AnyIndex, key: string): false {
+    if (key === 'key') this.tests = callback()
+    return false
+  } 
 }
 
 /*

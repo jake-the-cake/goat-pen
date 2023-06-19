@@ -1,11 +1,21 @@
-import { AnyIndex } from "../types/generic"
+import { AnyIndex, CallbackIndex } from "../types/generic"
 
 interface IGoatTest<T> {
   name?: string
+  methods?: CallbackIndex
+
+
+
   expected?: T | null
   actual?: T | null
   tests?: AnyIndex
 }
+
+interface IClassTestProps {
+  Class: any
+  params?: any[]
+}
+
 
 /**
  * Create tests that pass or fail based on result comparisons
@@ -13,6 +23,10 @@ interface IGoatTest<T> {
  */
 class GoatTest<T> implements IGoatTest<T> {
   name?: string
+
+  methods?: CallbackIndex
+
+
   expected?: T | null
   actual?: T | null
   tests?: AnyIndex
@@ -22,19 +36,42 @@ class GoatTest<T> implements IGoatTest<T> {
     return this.init(name)
   }
 
+
+  /**
+   * class() returns an object containing all of the methods that 
+   * need to be tested. 
+   * @param {class} ClassToTest - The entire class being tested
+   * @returns this - Updated object
+   */
+  public class(ClassToTest: any, tests: AnyIndex): this {
+    // get list of tests to run from variable
+    // create new
+    return this
+  }
+
+
+
+
+
+  /************** OLD CODE */
+
+
+
+
+
   async populateClassTests({Class, params}: IClassTestProps): Promise<this> {
     Promise.all(params || [])
       .then((args: any) => {
         this.tests = {
           ...new Class(...args, true).tests,
-          ['classInit']: Class
+          classInit: Class
         }
       })
     return this
   }
 
   /**
-   * Initialize the object
+   * Initialize the object or return it back to initial state
    * @returns {this} - Return constructed object
    */
   private init(name?: string): this {
@@ -45,10 +82,6 @@ class GoatTest<T> implements IGoatTest<T> {
   }
 }
 
-interface IClassTestProps {
-  Class: any
-  params?: any[]
-}
 
 async function classTest<T>({Class, params=['defaultText']}: IClassTestProps, name: string): Promise<AnyIndex> {
   return await new GoatTest(name).populateClassTests({Class, params})
@@ -57,3 +90,48 @@ async function classTest<T>({Class, params=['defaultText']}: IClassTestProps, na
 export {
 	classTest
 }
+
+// const counter: AnyIndex = testCounter(testParams, T.name)
+//       log.test(chalk.bgWhite(chalk.black('Class test: \'' + T.name + '\'')))
+//       Object.keys(testParams).forEach((key: string): void => {
+//       log.test('Starting test(s) on \'' + key + '\'')
+//       counter.tests[key].started = new Date().getTime()
+//       testParams[key].forEach((test: AnyIndex) => {
+//         counter.tests[key].total++
+//         let actual: any
+//         if (key === 'classInit') { actual = new T.tests[key](...test.params)}
+//         else actual = T.tests[key](...test.params)
+//         if (!['object'].includes(typeof actual)) actual = { value: actual }
+//         if (actual && actual[test.expected[0]] === test.expected[1]) {
+//           counter.tests[key].pass++
+//           testPass('(' + counter.tests[key].total + ') ' + test.test)
+//         }
+//         else if (actual === null && test.expected[1] === null) {
+//           counter.tests[key].pass++
+//           testPass('(' + counter.tests[key].total + ') ' + test.test)
+//         }
+//         else {
+//           counter.tests[key].fail++
+//           testFail('(' + counter.tests[key].total + ') ' + test.test)
+//         }
+//         counter.tests[key].ended = new Date().getTime()
+//         counter.tests[key].elapsed = counter.tests[key].ended - counter.tests[key].started + 'ms'
+//       })
+//       log.info('Testing on \'' + key + '\'' + ' completed in ' + counter.tests[key].elapsed)
+//     }, {what:'the heck'})
+//     counter.ended = new Date().getTime()
+//     counter.elapsed = counter.ended - counter.started + 'ms'
+//     log.info('\'' + counter.name + '\'' + ' completed in ' + counter.elapsed)
+//     let totals = {
+//       fail: 0,
+//       pass: 0,
+//       total: 0
+//     }
+//     Object.keys(counter.tests).forEach((key: string): void => {
+//       totals.fail += counter.tests[key].fail
+//       totals.pass += counter.tests[key].pass
+//       totals.total += counter.tests[key].total
+//     })
+//     log.info(totals.total + ' Tests run... > ' + chalk.green(totals.pass + ' Passed') + ' > ' + chalk.red(totals.fail + ' Failed'))
+//   })
+//   .catch((err: any) => devLog(err.message, 'err'))
