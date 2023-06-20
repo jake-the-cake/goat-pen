@@ -17,6 +17,119 @@ interface IClassTestProps {
 }
 
 
+
+
+interface TestParams {
+  [key: string]: {
+    params: any[]
+    expected: [string, any]
+    test: string
+  }[]
+}
+
+enum testValues {
+  value = 'test value',
+  updated = 'updated value',
+  blank = ''
+}
+
+const testParams: TestParams & Partial<GoatString> = {
+  classInit: [
+    {
+      params: [testValues.value],
+      expected: ['value', testValues.value],
+      test: 'Make sure class initialiazes value'
+
+    }
+  ],
+  setValue: [
+    {
+      params: [testValues.value],
+      expected: ['value', testValues.value],
+      test: 'Set value to supplied string'
+    },
+    {
+      params: [6047],
+      expected: ['value', '6047'],
+      test: 'Set value of a number to a string'
+    },
+    {
+      params: [{object: 'with data'}],
+      expected: ['value', null],
+      test: 'Set value of an object to a string'
+    },
+    {
+      params: [[1, '2']],
+      expected: ['value', null],
+      test: 'Set value of an array to a string'
+    },
+  ],
+  updateValue: [
+    {
+      params: [testValues.updated],
+      expected: ['value', testValues.updated],
+      test: 'Update value to supplied string'
+    },
+    {
+      params: [testValues.blank],
+      expected: ['value', testValues.updated],
+      test: 'Use previous text on blank string'
+    }
+  ]
+}
+
+interface TestCounter {
+  name: string
+  started: number
+  ended: number | string
+  elapsed: string
+  tests?: {
+    [key: string]: {
+      total: number
+      pass: number
+      fail: number
+      started: number | string
+      ended: number | string
+      elapsed: string
+    }
+  }
+}
+
+
+function duplicateValues(value: any, keys: string | string[]): AnyIndex {
+  if (typeof keys === 'string') keys = [keys]
+  const obj: AnyIndex = {}
+  keys.forEach((key: string): void => obj[key] = value)
+  return obj
+}
+
+
+function testCounter(tests: TestParams, name: string): TestCounter {
+  const inProgress: string = 'test in progress'
+  const testsObj: TestCounter = {
+    name,
+    started: new Date().getTime(),
+    ended: inProgress,
+    elapsed: inProgress,
+    tests: {}
+  }
+  Object.keys(tests).forEach((key: string): void => {
+    (testsObj as AnyIndex).tests[key]= {
+      total: 0,
+      pass: 0,
+      fail: 0,
+      started: null,
+      ended: inProgress,
+      elapsed: inProgress
+    }
+  })
+  return testsObj
+}
+
+
+
+
+
 /**
  * Create tests that pass or fail based on result comparisons
  * @class GoatTest
@@ -40,7 +153,8 @@ class GoatTest<T> implements IGoatTest<T> {
   /**
    * class() returns an object containing all of the methods that 
    * need to be tested. 
-   * @param {class} ClassToTest - The entire class being tested
+   * @param {class} ClassToTest - The class being tested
+   * @param {AnyIndex} tests - 
    * @returns this - Updated object
    */
   public class(ClassToTest: any, tests: AnyIndex): this {
