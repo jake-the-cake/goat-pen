@@ -1,3 +1,4 @@
+import goatString from "../utils/strings"
 import { AnyIndex, CallbackIndex } from "../types/generic"
 
 interface IGoatTest<T> {
@@ -100,27 +101,22 @@ function duplicateValues(value: any, keys: string | string[]): AnyIndex {
   if (typeof keys === 'string') keys = [keys]
   const obj: AnyIndex = {}
   keys.forEach((key: string): void => obj[key] = value)
+  console.log(obj)
   return obj
 }
 
 
 function testCounter(tests: TestParams, name: string): TestCounter {
-  const inProgress: string = 'test in progress'
-  const testsObj: TestCounter = {
+  const testsObj: TestCounter & any = {
     name,
     started: new Date().getTime(),
-    ended: inProgress,
-    elapsed: inProgress,
-    tests: {}
+    tests: {},
+    ...duplicateValues('test in progress', ['ended', 'elapsed'])
   }
   Object.keys(tests).forEach((key: string): void => {
     (testsObj as AnyIndex).tests[key]= {
-      total: 0,
-      pass: 0,
-      fail: 0,
-      started: null,
-      ended: inProgress,
-      elapsed: inProgress
+      ...duplicateValues(0, ['total', 'pass', 'fail']),
+    ...duplicateValues('test in progress', ['started', 'ended', 'elapsed'])
     }
   })
   return testsObj
@@ -136,7 +132,6 @@ function testCounter(tests: TestParams, name: string): TestCounter {
  */
 class GoatTest<T> implements IGoatTest<T> {
   name?: string
-
   methods?: CallbackIndex
 
 
@@ -149,21 +144,20 @@ class GoatTest<T> implements IGoatTest<T> {
     return this.init(name)
   }
 
-
-  /**
-   * class() returns an object containing all of the methods that 
-   * need to be tested. 
-   * @param {class} ClassToTest - The class being tested
-   * @param {AnyIndex} tests - 
-   * @returns this - Updated object
-   */
-  public class(ClassToTest: any, tests: AnyIndex): this {
+  public class(ClassToTest: any): this {
     // get list of tests to run from variable
+    this.populateTests(ClassToTest)
     // create new
+    console.log(this)
     return this
   }
 
-
+  // For Running Tests
+  private populateTests(Class: any): void {
+    this.tests = {}
+    Object.getOwnPropertyNames(Class.prototype)
+      .forEach((key: string) => { if (key !== 'constructor') this.tests![key] = t[key] })
+  }
 
 
 
@@ -197,7 +191,7 @@ class GoatTest<T> implements IGoatTest<T> {
 }
 
 
-async function classTest<T>({Class, params=['defaultText']}: IClassTestProps, name: string): Promise<AnyIndex> {
+async function classTest({Class, params=['defaultText']}: IClassTestProps, name: string): Promise<AnyIndex> {
   return await new GoatTest(name).populateClassTests({Class, params})
 }
 
@@ -249,3 +243,5 @@ export {
 //     log.info(totals.total + ' Tests run... > ' + chalk.green(totals.pass + ' Passed') + ' > ' + chalk.red(totals.fail + ' Failed'))
 //   })
 //   .catch((err: any) => devLog(err.message, 'err'))
+
+new GoatTest('test').class(goatString)

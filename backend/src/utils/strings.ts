@@ -28,6 +28,14 @@ interface IGoatString {
   tests?: AnyIndex
 }
 
+// For Running Tests
+function populateTests(t: any): AnyIndex {
+  t.tests = {}
+  Object.getOwnPropertyNames(GoatString.prototype)
+    .forEach((key: string) => { if (key !== 'constructor') t.tests[key] = t[key] })
+  return t.tests
+}
+
 /**
  * Creates an object with a string value to be edited
  * @type {IGoatString}
@@ -46,7 +54,7 @@ export class GoatString implements IGoatString {
   tests?: AnyIndex
   
   constructor(value: string = "", isTest: boolean = false) {
-    if (isTest) this.populateTests()
+    if (isTest) populateTests(this)
     this.setValue(value)
   }
 
@@ -99,20 +107,12 @@ export class GoatString implements IGoatString {
     return value !== '' ? (value[method as any] as any)() : ""
   }
 
-  // For Running Tests
-  private populateTests(): void {
-    this.tests = {}
-    Object.getOwnPropertyNames(GoatString.prototype)
-      .forEach((key: string) => {
-        if (key === 'constructor') return
-        (this.tests as AnyIndex)[key] = (this as AnyIndex)[key]
-      }
-    )
-  }
 
-  protected runTests(callback: () => AnyIndex, key: string): false {
-    if (key === 'key') this.tests = callback()
-    return false
+  protected runTests(callback: () => AnyIndex, key: string): AnyIndex {
+    // if (key === 'key') this.tests = callback()
+    if (key === 'key') this.populateTests()
+    else this.tests = {}
+    return this.tests!
   } 
 }
 
