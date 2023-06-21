@@ -10,8 +10,6 @@ import { log } from './utils/logs'
 import './auth/server'
 import './testing/server'
 import './testing/newtest'
-import goatUrl from './utils/urls'
-goatUrl
 
 /** get constants from config file */
 const serverPort = config.constants.conn.port

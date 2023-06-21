@@ -47,7 +47,7 @@ interface IGoatString {
  * @property {IOString} lower - Return i.e. 'aaaaa...'
  * @returns {string} Edited string value
 */
-export class GoatString implements IGoatString {
+class GoatString implements IGoatString {
   value: string = ''
   static proper: (value?: string) => string
   static upper: (value?: string) => string
@@ -57,7 +57,6 @@ export class GoatString implements IGoatString {
   constructor(value: string = "", isTest: boolean = false) {
     if (isTest) populateTests(this)
     this.setValue(value)
-    console.log(this)
     return this
   }
 
@@ -130,7 +129,8 @@ export default goatString
 export {
   proper,
   upper,
-  lower
+  lower,
+  GoatString
 }
 
 /* 
@@ -247,8 +247,9 @@ classTest({Class: GoatString}, 'GoatString by Quiggle')
       testParams[key].forEach((test: AnyIndex) => {
         counter.tests[key].total++
         let actual: any
+        console.log(T)
         if (key === 'classInit') { actual = new T.tests[key](...test.params)}
-        else actual = T.tests[key](...test.params)
+        else actual = T.tasks[key](...test.params)
         if (!['object'].includes(typeof actual)) actual = { value: actual }
         if (actual && actual[test.expected[0]] === test.expected[1]) {
           counter.tests[key].pass++
@@ -265,11 +266,11 @@ classTest({Class: GoatString}, 'GoatString by Quiggle')
         counter.tests[key].ended = new Date().getTime()
         counter.tests[key].elapsed = counter.tests[key].ended - counter.tests[key].started + 'ms'
       })
-      log.info('Testing on \'' + key + '\'' + ' completed in ' + counter.tests[key].elapsed)
+      log.info('Testing on \'' + key + '\' completed in ' + counter.tests[key].elapsed)
     }, {what:'the heck'})
     counter.ended = new Date().getTime()
     counter.elapsed = counter.ended - counter.started + 'ms'
-    log.info('\'' + counter.name + '\'' + ' completed in ' + counter.elapsed)
+    log.info('\'' + counter.name + '\'  completed in ' + counter.elapsed)
     let totals = {
       fail: 0,
       pass: 0,
