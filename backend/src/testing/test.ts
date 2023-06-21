@@ -1,5 +1,6 @@
-import goatString from "../utils/strings"
+import goatString, { GoatString } from "../utils/strings"
 import { AnyIndex, CallbackIndex } from "../types/generic"
+import config from "../config"
 
 interface IGoatTest<T> {
   name?: string
@@ -146,6 +147,8 @@ class GoatTest<T> implements IGoatTest<T> {
 
   public class(ClassToTest: any): this {
     // get list of tests to run from variable
+		// const x = new
+		console.log(ClassToTest)
     this.populateTests(ClassToTest)
     // create new
     console.log(this)
@@ -153,10 +156,12 @@ class GoatTest<T> implements IGoatTest<T> {
   }
 
   // For Running Tests
-  private populateTests(Class: any): void {
+  private populateTests(ClassToTest: any): void {
     this.tests = {}
-    Object.getOwnPropertyNames(Class.prototype)
-      .forEach((key: string) => { if (key !== 'constructor') this.tests![key] = t[key] })
+		console.log(ClassToTest)
+		// const x = new classToTest()
+    // Object.getOwnPropertyNames(ClassToTest)
+    //   .forEach((key: string) => { if (key !== 'constructor') this.tests![key] = (this as AnyIndex)[key] })
   }
 
 
@@ -244,4 +249,4 @@ export {
 //   })
 //   .catch((err: any) => devLog(err.message, 'err'))
 
-new GoatTest('test').class(goatString)
+// new GoatTest('test').class(new GoatString(config.defaults.value, config.defaults.isTest))

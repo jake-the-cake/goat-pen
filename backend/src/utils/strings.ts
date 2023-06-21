@@ -3,6 +3,7 @@ import { devLog, log, testFail, testPass } from "./logs"
 import config from "../config"
 import { classTest } from "../testing/test"
 import chalk from "chalk"
+import { populateTests } from "../testing/newtest"
 
 /* Non-universal defaults */
 config.defaults.value = ''
@@ -25,16 +26,16 @@ interface IGoatString {
   proper: IOString
   upper: IOString
   lower: IOString
-  tests?: AnyIndex
+  tasks?: AnyIndex
 }
 
 // For Running Tests
-function populateTests(t: any): AnyIndex {
-  t.tests = {}
-  Object.getOwnPropertyNames(GoatString.prototype)
-    .forEach((key: string) => { if (key !== 'constructor') t.tests[key] = t[key] })
-  return t.tests
-}
+// function populateTests(t: any): AnyIndex {
+//   t.tests = {}
+//   Object.getOwnPropertyNames(GoatString.prototype)
+//     .forEach((key: string) => { if (key !== 'constructor') t.tests[key] = t[key] })
+//   return t.tests
+// }
 
 /**
  * Creates an object with a string value to be edited
@@ -51,11 +52,13 @@ export class GoatString implements IGoatString {
   static proper: (value?: string) => string
   static upper: (value?: string) => string
   static lower: (value?: string) => string
-  tests?: AnyIndex
+  tasks?: AnyIndex
   
   constructor(value: string = "", isTest: boolean = false) {
     if (isTest) populateTests(this)
     this.setValue(value)
+    console.log(this)
+    return this
   }
 
   /**
@@ -107,13 +110,10 @@ export class GoatString implements IGoatString {
     return value !== '' ? (value[method as any] as any)() : ""
   }
 
-
-  protected runTests(callback: () => AnyIndex, key: string): AnyIndex {
-    // if (key === 'key') this.tests = callback()
-    if (key === 'key') this.populateTests()
-    else this.tests = {}
-    return this.tests!
-  } 
+  // protected runTests(callback: () => AnyIndex, key: string): AnyIndex {
+  //   if (key === 'key') this.tests = callback()
+  //   return this.tests!
+  // } 
 }
 
 /*
