@@ -12,18 +12,20 @@ class GoatTest {
 
 	public class<T>(ClassName: T, params: any[] = []): this {
 		console.log(ClassName)
-		console.log(params)
 		if (params && params[0] === 'la') this.tasks = {
 			...new (ClassName as any)(...params, true).tasks,
 			classConstructor: { fn: ClassName }
 		}
-		return this
+		console.log((ClassName as any).tasks)
+		return this 
 	}
 }
 
 export function populateTests(ClassName: any): AnyIndex {
   ClassName.tasks = {}
-  Object.getOwnPropertyNames(GoatString.prototype)
+	console.log(ClassName)
+
+  Object.getOwnPropertyNames(ClassName.prototype)
     .forEach((key: string) => { if (key !== 'constructor') ClassName.tasks[key] = { fn: ClassName[key] }})
 	console.log(ClassName)
   return ClassName.tasks
@@ -36,6 +38,8 @@ function quiggleTest(name: string): GoatTest {
 
 // const x = new GoatString('')
 // console.log(x)
-console.log(GoatString)
+// console.log(GoatString)
+// console.log(GoatString)
+// console.log(GoatString)
 
-// console.log(quiggleTest('test').class(GoatString, ['hi']))
+console.log(quiggleTest('test').class(GoatString, ['hi']))

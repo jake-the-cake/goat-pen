@@ -160,8 +160,8 @@ class GoatTest<T> implements IGoatTest<T> {
     this.tests = {}
 		console.log(ClassToTest)
 		// const x = new classToTest()
-    // Object.getOwnPropertyNames(ClassToTest)
-    //   .forEach((key: string) => { if (key !== 'constructor') this.tests![key] = (this as AnyIndex)[key] })
+    Object.getOwnPropertyNames(ClassToTest)
+      .forEach((key: string) => { if (key !== 'constructor') this.tests![key] = (this as AnyIndex)[key] })
   }
 
 
@@ -177,7 +177,7 @@ class GoatTest<T> implements IGoatTest<T> {
       .then((args: any) => {
         this.tests = {
           ...new Class(...args, true).tests,
-          classInit: Class
+          // classInit: Class
         }
       })
     return this

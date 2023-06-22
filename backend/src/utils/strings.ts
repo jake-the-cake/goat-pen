@@ -29,12 +29,12 @@ interface IGoatString {
   tasks?: AnyIndex
 }
 
-// For Running Tests
+// // For Running Tests
 // function populateTests(t: any): AnyIndex {
-//   t.tests = {}
+//   t.tasks = {}
 //   Object.getOwnPropertyNames(GoatString.prototype)
-//     .forEach((key: string) => { if (key !== 'constructor') t.tests[key] = t[key] })
-//   return t.tests
+//     .forEach((key: string) => { if (key !== 'constructor') t.tasks[key] = t[key] })
+//   return t.tasks
 // }
 
 /**
@@ -152,14 +152,14 @@ enum testValues {
 }
 
 const testParams: TestParams & Partial<GoatString> = {
-  classInit: [
-    {
-      params: [testValues.value],
-      expected: ['value', testValues.value],
-      test: 'Make sure class initialiazes value'
+  // classInit: [
+  //   {
+  //     params: [testValues.value],
+  //     expected: ['value', testValues.value],
+  //     test: 'Make sure class initialiazes value'
 
-    }
-  ],
+  //   }
+  // ],
   setValue: [
     {
       params: [testValues.value],
