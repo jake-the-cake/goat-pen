@@ -10,7 +10,7 @@ interface IGoatTest<T> {
 
   expected?: T | null
   actual?: T | null
-  tests?: AnyIndex
+  tasks?: AnyIndex
 }
 
 interface IClassTestProps {
@@ -29,56 +29,56 @@ interface TestParams {
   }[]
 }
 
-enum testValues {
-  value = 'test value',
-  updated = 'updated value',
-  blank = ''
-}
+// enum testValues {
+//   value = 'test value',
+//   updated = 'updated value',
+//   blank = ''
+// }
 
-const testParams: TestParams & Partial<GoatString> = {
-  classInit: [
-    {
-      params: [testValues.value],
-      expected: ['value', testValues.value],
-      test: 'Make sure class initialiazes value'
+// const testParams: TestParams & Partial<GoatString> = {
+//   // classInit: [
+//   //   {
+//   //     params: [testValues.value],
+//   //     expected: ['value', testValues.value],
+//   //     test: 'Make sure class initialiazes value'
 
-    }
-  ],
-  setValue: [
-    {
-      params: [testValues.value],
-      expected: ['value', testValues.value],
-      test: 'Set value to supplied string'
-    },
-    {
-      params: [6047],
-      expected: ['value', '6047'],
-      test: 'Set value of a number to a string'
-    },
-    {
-      params: [{object: 'with data'}],
-      expected: ['value', null],
-      test: 'Set value of an object to a string'
-    },
-    {
-      params: [[1, '2']],
-      expected: ['value', null],
-      test: 'Set value of an array to a string'
-    },
-  ],
-  updateValue: [
-    {
-      params: [testValues.updated],
-      expected: ['value', testValues.updated],
-      test: 'Update value to supplied string'
-    },
-    {
-      params: [testValues.blank],
-      expected: ['value', testValues.updated],
-      test: 'Use previous text on blank string'
-    }
-  ]
-}
+//   //   }
+//   // ],
+//   setValue: [
+//     {
+//       params: [testValues.value],
+//       expected: ['value', testValues.value],
+//       test: 'Set value to supplied string'
+//     },
+//     {
+//       params: [6047],
+//       expected: ['value', '6047'],
+//       test: 'Set value of a number to a string'
+//     },
+//     {
+//       params: [{object: 'with data'}],
+//       expected: ['value', null],
+//       test: 'Set value of an object to a string'
+//     },
+//     {
+//       params: [[1, '2']],
+//       expected: ['value', null],
+//       test: 'Set value of an array to a string'
+//     },
+//   ],
+//   updateValue: [
+//     {
+//       params: [testValues.updated],
+//       expected: ['value', testValues.updated],
+//       test: 'Update value to supplied string'
+//     },
+//     {
+//       params: [testValues.blank],
+//       expected: ['value', testValues.updated],
+//       test: 'Use previous text on blank string'
+//     }
+//   ]
+// }
 
 interface TestCounter {
   name: string
@@ -107,21 +107,21 @@ function duplicateValues(value: any, keys: string | string[]): AnyIndex {
 }
 
 
-function testCounter(tests: TestParams, name: string): TestCounter {
-  const testsObj: TestCounter & any = {
-    name,
-    started: new Date().getTime(),
-    tests: {},
-    ...duplicateValues('test in progress', ['ended', 'elapsed'])
-  }
-  Object.keys(tests).forEach((key: string): void => {
-    (testsObj as AnyIndex).tests[key]= {
-      ...duplicateValues(0, ['total', 'pass', 'fail']),
-    ...duplicateValues('test in progress', ['started', 'ended', 'elapsed'])
-    }
-  })
-  return testsObj
-}
+// function testCounter(tests: TestParams, name: string): TestCounter {
+//   const testsObj: TestCounter & any = {
+//     name,
+//     started: new Date().getTime(),
+//     tests: {},
+//     ...duplicateValues('test in progress', ['ended', 'elapsed'])
+//   }
+//   Object.keys(tests).forEach((key: string): void => {
+//     (testsObj as AnyIndex).tests[key]= {
+//       ...duplicateValues(0, ['total', 'pass', 'fail']),
+//     ...duplicateValues('test in progress', ['started', 'ended', 'elapsed'])
+//     }
+//   })
+//   return testsObj
+// }
 
 
 
@@ -138,7 +138,7 @@ class GoatTest<T> implements IGoatTest<T> {
 
   expected?: T | null
   actual?: T | null
-  tests?: AnyIndex
+  tasks?: AnyIndex
 
 
   constructor(name: string) {
@@ -157,11 +157,11 @@ class GoatTest<T> implements IGoatTest<T> {
 
   // For Running Tests
   private populateTests(ClassToTest: any): void {
-    this.tests = {}
+    this.tasks = {}
 		console.log(ClassToTest)
 		// const x = new classToTest()
     Object.getOwnPropertyNames(ClassToTest)
-      .forEach((key: string) => { if (key !== 'constructor') this.tests![key] = (this as AnyIndex)[key] })
+      .forEach((key: string) => { if (key !== 'constructor') this.tasks![key] = (this as AnyIndex)[key] })
   }
 
 
@@ -175,8 +175,8 @@ class GoatTest<T> implements IGoatTest<T> {
   async populateClassTests({Class, params}: IClassTestProps): Promise<this> {
     Promise.all(params || [])
       .then((args: any) => {
-        this.tests = {
-          ...new Class(...args, true).tests,
+        this.tasks = {
+          ...new Class(...args, true).tasks,
           // classInit: Class
         }
       })
