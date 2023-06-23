@@ -1,5 +1,5 @@
 import { AnyIndex } from "../types/generic"
-import { TestCounter, TestParams } from "./types"
+import { TaskParams, TestCounter } from "./types"
 
 function populateTests(ClassName: any, ClassObject: AnyIndex, tasks: AnyIndex = {}): AnyIndex {
   Object.getOwnPropertyNames(ClassName.prototype)
@@ -7,7 +7,7 @@ function populateTests(ClassName: any, ClassObject: AnyIndex, tasks: AnyIndex = 
   return tasks
 }
 
-function testCounter(tests: TestParams, name: string): TestCounter {
+function testCounter(tests: TaskParams, name: string): TestCounter {
   const testsObj: TestCounter = {
     name,
     started: new Date().getTime(),

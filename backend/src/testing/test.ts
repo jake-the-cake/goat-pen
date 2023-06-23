@@ -3,11 +3,12 @@ import { AnyIndex } from "../types/generic"
 import testConfig from "./config"
 import { TaskParams } from "./types"
 
+let counter: any
+
 interface IGoatTest {
 	testName: string
 	tasks: AnyIndex
 }
-
 
 export class GoatTest implements IGoatTest {
 	testName: string
@@ -35,12 +36,52 @@ function quiggleTest(name: string): GoatTest {
 	return new GoatTest(name)
 }
 
-const ClassTests = [
+function setDuplicateValues(value: any, keys: string[], outputObj: AnyIndex = {}): AnyIndex {
+  keys.forEach((key: string) => outputObj[key] = value)
+  return outputObj
+}
+
+function initCounter(tests: any[]): AnyIndex {
+  return {
+    started: new Date().getTime(),
+    ...setDuplicateValues(null, ['ended', 'elapsed']),
+    tests: []
+  }
+  // Object.keys(tests).forEach((key: string): void => {
+  //   (testsObj as AnyIndex).tasks[key]= {
+  //     total: 0,
+  //     pass: 0,
+  //     fail: 0,
+  //     started: null,
+  //     ended: null,
+  //     elapsed: null
+  //   }
+  // })
+}
+
+const ClassTests: any[] = [
 	{ class: GoatString, params: ['hi'], test: goatStringTasks, title: 'Goat String' }
 ]
 
+const FunctionTests: any[] = [
+
+]
+
+function parseClassTests(tests: any[]): any[] {
+  return ClassTests
+}
+
+function parseFunctionTests(tests: any[]): any[] {
+  return FunctionTests
+}
+
 if (testConfig.runTests === true) {
-	ClassTests.forEach((test: any) => {
+  const allTests = {
+    ...parseClassTests(ClassTests),
+    ...parseFunctionTests(FunctionTests)
+  }
+  counter = initCounter(allTests)
+  ClassTests.forEach((test: any) => {
 		quiggleTest(test.title).class(test.class, test.params || []).run(test.test)
 	})
 }
