@@ -2,6 +2,7 @@ import { Model } from "mongoose"
 import { ApiStatus, ReqType, ResType } from "../../types/apiObjects"
 import { CallbackIndex, StringIndex } from "../../types/generic"
 import { QuiggleErr } from "../../utils/errors"
+import { stopWatch } from "../../utils/misc"
 
 function saveAndExit(item: Model<any> & Document, objs: {req: ReqType, res: ResType}) {
 	return (item as any).save()
@@ -28,11 +29,6 @@ function onApiFailure(code: number, error: StringIndex | QuiggleErr | true, objs
 function final(req: ReqType, res: ResType): void {
 	res.api!.info['elapsed'] = stopWatch(req.api!.info.started)
 	res.status(res.api!.code).json(res.api)
-}
-
-// maybe a regular util?
-function stopWatch(start: number): string {
-	return new Date().getTime() - start + 'ms'
 }
 
 function useValidation(

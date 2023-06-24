@@ -2,27 +2,38 @@ import { GoatString, goatStringTasks } from "../utils/strings"
 import { AnyIndex } from "../types/generic"
 import testConfig from "./config"
 import { TaskParams } from "./types"
+import { setDuplicateValues } from "../utils/misc"
 
-let counter: any
 
 interface IGoatTest {
-	testName: string
-	tasks: AnyIndex
+	// testName: string
+	agenda: AnyIndex
+	timer: AnyIndex
 }
 
 export class GoatTest implements IGoatTest {
-	testName: string
-	tasks: AnyIndex = {}
+	// testName: string
+	agenda: AnyIndex
+	timer: AnyIndex
 
-	constructor(testName: string) {
-		this.testName = testName
+	constructor(/*testName: string*/) {
+		// this.testName = testName
+		this.agenda = {}
+		this.timer = this.initTimer()
 	}
 
-	public class(ClassName: any, params: any[] = []): this {
-		this.tasks = {
-			...new ClassName(...params, true).tasks,
-			classConstructor: { fn: ClassName }
+	// public class(ClassName: any, params: any[] = []): this {
+	public class(test: any): this {
+		const index: string = 'test_' + (Object.keys(this.agenda).length + 1)
+		this.agenda[index] = {
+			testName: test.title,
+			tasks: {
+				...this.filterTasks(new test.class( ...test.params, true).tasks, test.test),
+				classConstructor: { fn: test.class }
+			}
 		}
+		this.timer.agenda = this.addTestCounter()
+		console.log(this.agenda)
 		return this 
 	}
 
@@ -30,34 +41,64 @@ export class GoatTest implements IGoatTest {
 		// console.log(taskList)
 		console.log(this)
 	}
+
+	private filterTasks(proto: AnyIndex, tasks: AnyIndex): AnyIndex {
+		Object.keys(proto).forEach((key: string): void => {
+			if (!Object.keys(tasks).includes(key)) delete proto[key]
+		})
+		return proto
+	}
+
+	private initTimer(): AnyIndex {
+		return {
+			id: 'testID',
+			started: testConfig.counter.start(),
+			...setDuplicateValues(testConfig.counter.going, ['ended', 'elapsed']),
+			agenda: {}
+		}
+	}
+	private addTestCounter() {
+		console.log(this.agenda)
+	}
 }
 
-function quiggleTest(name: string): GoatTest {
-	return new GoatTest(name)
+
+
+
+
+
+
+
+
+
+
+
+
+function quiggleTest(): GoatTest {
+	return new GoatTest()
 }
 
-function setDuplicateValues(value: any, keys: string[], outputObj: AnyIndex = {}): AnyIndex {
-  keys.forEach((key: string) => outputObj[key] = value)
-  return outputObj
-}
+// const 
 
 function initCounter(tests: any[]): AnyIndex {
   return {
-    started: new Date().getTime(),
-    ...setDuplicateValues(null, ['ended', 'elapsed']),
-    tests: []
+		id: 'testID',
+    started: testConfig.counter.start(),
+    ...setDuplicateValues(testConfig.counter.going, ['ended', 'elapsed']),
+    agenda: {}
   }
-  // Object.keys(tests).forEach((key: string): void => {
-  //   (testsObj as AnyIndex).tasks[key]= {
-  //     total: 0,
-  //     pass: 0,
-  //     fail: 0,
-  //     started: null,
-  //     ended: null,
-  //     elapsed: null
-  //   }
-  // })
 }
+
+
+function addTaskCounter() {
+
+}
+
+function addVariantCounter() {
+
+}
+
+
 
 const ClassTests: any[] = [
 	{ class: GoatString, params: ['hi'], test: goatStringTasks, title: 'Goat String' }
@@ -67,22 +108,9 @@ const FunctionTests: any[] = [
 
 ]
 
-function parseClassTests(tests: any[]): any[] {
-  return ClassTests
-}
-
-function parseFunctionTests(tests: any[]): any[] {
-  return FunctionTests
-}
-
 if (testConfig.runTests === true) {
-  const allTests = {
-    ...parseClassTests(ClassTests),
-    ...parseFunctionTests(FunctionTests)
-  }
-  counter = initCounter(allTests)
   ClassTests.forEach((test: any) => {
-		quiggleTest(test.title).class(test.class, test.params || []).run(test.test)
+		quiggleTest().class(test).run(test.test)
 	})
 }
 
