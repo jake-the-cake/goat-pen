@@ -1,42 +1,85 @@
 import { GoatString, goatStringTasks } from "../utils/strings"
 import { AnyIndex } from "../types/generic"
 import testConfig from "./config"
-import { TaskParams } from "./types"
+import { TaskParams, Variant } from "./types"
 import { setDuplicateValues } from "../utils/misc"
+import { log } from "../utils/logs"
+import chalk from "chalk"
 
+interface PassFailLog {
+	pass: string[]
+	fail: string[]
+}
 
 interface IGoatTest {
-  info?: AnyIndex
 	agenda: AnyIndex
-	count: number
+	results: PassFailLog
 }
 
 export class GoatTest implements IGoatTest {
-  info?: AnyIndex
+	private static info?: AnyIndex
+	private count?: number = 1
 	agenda: AnyIndex
-	count: number = 1
-
+	results: PassFailLog = { pass: [], fail: [] }
+	
 	constructor() {
 		this.agenda = this.initTimer()
+		log.test(chalk.bgCyan(chalk.white(' QuiggleTest[v' + testConfig.version + '] ') + chalk.black('id: ' + this.agenda.id + ' ')))
 	}
 
-	public class(info: any): this {
-    this.info = info
+	public class(info: AnyIndex): this {
+    GoatTest.info = info
 		this.agenda['test_' + this.count] = {
 			testName: info.title,
 			tasks: {
-				...this.filterTasks(new info.class( ...info.params, true).tasks, info.test),
+				...this.filterTasks(new info.class( ...info.params, true).tasks, info.tasks),
 				classConstructor: { fn: info.class }
 			}
 		}
-		this.addTimers()
-		this.count++
-		return this 
+		return this.initTask()
 	}
 
-	public run(taskList: TaskParams) {
-		// console.log(taskList)
-		console.log(this)
+	public func(info: AnyIndex): this {
+		GoatTest.info = info
+		this.agenda['test_' + this.count] = {
+			testName: info.title,
+			tasks: { main: { fn: info.func }}
+		}
+		return this.initTask()
+	}
+	
+	private initTask(): this {
+		this.addTimers()
+		delete GoatTest.info
+		this.count!++
+		return this
+	}
+
+	public run() {
+		this.testKeys!.forEach((key: string, i: number) => {
+			log.test(chalk.bgWhite(chalk.cyan(' Test #' + (i + 1) + ' ') + chalk.black(this.agenda[key].testName + ' ')))
+			try {
+				Object.keys(this.agenda[key].tasks).forEach((k: string) => {
+					console.log(k)
+					// console.log(this.agenda[key].tasks[k])
+					this.agenda[key].tasks[k].variants.forEach((variant: Variant) => {
+						if (k !== 'classConstructor')	{
+							console.log(variant)
+							console.log(this.agenda[key].tasks[k].fn(...variant.params))
+						}
+						
+
+						// console.log(variant)
+					})
+				})
+			} catch (err: any) {
+				log.err(err.message)
+			}
+			// console.log(this.agenda[key])
+		})
+		delete this.count
+		delete this.testKeys
+		// console.log(this)
 	}
 
 	private filterTasks(proto: AnyIndex, tasks: AnyIndex): AnyIndex {
@@ -46,40 +89,45 @@ export class GoatTest implements IGoatTest {
 		return proto
 	}
 
+	private getTestKeys(): string[] {
+		return Object.keys(this.agenda).filter((key: string) => !GoatTest.ignore.includes(key) && !this.testKeys!.includes(key))
+	}
+
   private static unsetTimer = {
     ...setDuplicateValues(testConfig.counter.waiting, ['ended', 'elapsed', 'started'])
   }
 
-	private static ignore = ['elapsed', 'started', 'ended', 'id', 'agenda']
+	private static ignore: string[] = ['elapsed', 'started', 'ended', 'id', 'agenda', 'testNam']
+	private testKeys?: string[] = []
 
 	private initTimer(): AnyIndex {
 		return {
-			id: 'testID',
+			id: testConfig.testId,
 			started: testConfig.counter.start(),
 			...setDuplicateValues(testConfig.counter.going, ['ended', 'elapsed']),
 		}
 	}
 
 	private addTimers(obj: AnyIndex = {}): void {
-    Object.keys(this.agenda).filter((key: string) => !GoatTest.ignore.includes(key)).forEach((key: string) => {
+    this.getTestKeys().forEach((key: string) => {
       this.agenda[key] = {
 				...this.agenda[key],
         ...GoatTest.unsetTimer,
       }
-      Object.keys(this.info!.test).forEach((k: string) => {
-        this.agenda[key].tasks[k] = {
+      Object.keys(GoatTest.info!.tasks).forEach((k: string) => {
+				this.agenda[key].tasks[k] = {
 					...this.agenda[key].tasks[k],
           ...GoatTest.unsetTimer,
           variants: []
         }
-        for(let i = 0; i < this.info!.test[k].length; i++) {
-          console.log(this.info!.test[k][i].title || 'no')
+        for (let i = 0; i < GoatTest.info!.tasks[k].length; i++) {
           this.agenda[key].tasks[k].variants.push({
-            title: this.info!.test[k][i].title,
+            ...GoatTest.info!.tasks[k][i],
             ...GoatTest.unsetTimer
           })
         }
       })
+			this.testKeys!.push(key)
     })
 	}
 }
@@ -100,18 +148,36 @@ function quiggleTest(): GoatTest {
 	return new GoatTest()
 }
 
+const goatTestTasks: TaskParams = { main: [
+	{
+		params: [],
+		title: 'test this thing',
+		checkProp: 'count',
+		expect: 1
+	}
+]}
+
 const ClassTests: any[] = [
-	{ class: GoatString, params: ['hi'], test: goatStringTasks, title: 'Goat String' }
+	{ class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' },
+	// { class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' }
 ]
 
-// const FunctionTests: any[] = [
+const FunctionTests: any[] = [
+	{ func: quiggleTest, tasks: goatTestTasks, title: 'Goat Test' },
+	// { func: quiggleTest, tasks: goatTestTasks, title: 'Goat Test' },
+]
 
-// ]
 
 if (testConfig.runTests === true) {
-  ClassTests.forEach((test: any) => {
-		quiggleTest().class(test).run(test.test)
+	const t = quiggleTest()
+	ClassTests.forEach((test: AnyIndex) => {
+		t.class(test)
 	})
+	FunctionTests.forEach((test: AnyIndex) => {
+		t.func(test)
+	})
+	t.run()
+
 }
 
 
@@ -120,9 +186,10 @@ if (testConfig.runTests === true) {
 //   .then((T: AnyIndex) => {
 //     console.log(T)
 //     const counter: AnyIndex = testCounter(testParams, T.name)
-//       log.test(chalk.bgWhite(chalk.black('Class test: \'' + T.name + '\'')))
 //       Object.keys(testParams).forEach((key: string): void => {
 //       log.test('Starting test(s) on \'' + key + '\'')
+
+
 //       counter.tests[key].started = new Date().getTime()
 //       testParams[key].forEach((test: AnyIndex) => {
 //         counter.tasks[key].total++

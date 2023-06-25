@@ -35,6 +35,7 @@ interface TestCounter {
 }
 
 export {
+	Variant,
 	TaskParams,
 	TestValues,
 	TestCounter

@@ -59,8 +59,6 @@ function validationPromise(
 }
 
 export { 
-	// misc functions
-	stopWatch,
 	// validation functions
 	useValidation,
 	validationPromise,

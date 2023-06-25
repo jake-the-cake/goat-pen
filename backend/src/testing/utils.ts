@@ -1,5 +1,4 @@
 import { AnyIndex } from "../types/generic"
-import { TaskParams, TestCounter } from "./types"
 
 function populateTests(ClassName: any, ClassObject: AnyIndex, tasks: AnyIndex = {}): AnyIndex {
   Object.getOwnPropertyNames(ClassName.prototype)
@@ -7,28 +6,6 @@ function populateTests(ClassName: any, ClassObject: AnyIndex, tasks: AnyIndex = 
   return tasks
 }
 
-function testCounter(tests: TaskParams, name: string): TestCounter {
-  const testsObj: TestCounter = {
-    name,
-    started: new Date().getTime(),
-    ended: null,
-    elapsed: null,
-    tests: {}
-  }
-  Object.keys(tests).forEach((key: string): void => {
-    (testsObj as AnyIndex).tasks[key]= {
-      total: 0,
-      pass: 0,
-      fail: 0,
-      started: null,
-      ended: null,
-      elapsed: null
-    }
-  })
-  return testsObj
-}
-
 export {
-	populateTests,
-	testCounter
+	populateTests
 }

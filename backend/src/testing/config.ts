@@ -1,4 +1,4 @@
-import { startWatch, stopWatch } from "../utils/misc"
+import { randomHex, startWatch, stopWatch } from "../utils/misc"
 
 const testConfig = {
 	runTests: true,
@@ -7,7 +7,11 @@ const testConfig = {
 		waiting: 'not started',
 		start: () => startWatch(),
 		stop: (start: number) => stopWatch(start),
-	}
+	},
+	testName: 'test',
+	testNameSeparator: '_',
+  version: '0.1.0',
+	testId: randomHex(16)
 }
 
 export default testConfig
