@@ -8,30 +8,29 @@ import { setDuplicateValues } from "../utils/misc"
 interface IGoatTest {
   info?: AnyIndex
 	agenda: AnyIndex
-	timer: AnyIndex
+	count: number
 }
 
 export class GoatTest implements IGoatTest {
   info?: AnyIndex
 	agenda: AnyIndex
-	timer: AnyIndex
+	count: number = 1
 
 	constructor() {
-		this.agenda = {}
-		this.timer = this.initTimer()
+		this.agenda = this.initTimer()
 	}
 
 	public class(info: any): this {
     this.info = info
-		const index: string = 'test_' + (Object.keys(this.agenda).length + 1)
-		this.agenda[index] = {
+		this.agenda['test_' + this.count] = {
 			testName: info.title,
 			tasks: {
 				...this.filterTasks(new info.class( ...info.params, true).tasks, info.test),
 				classConstructor: { fn: info.class }
 			}
 		}
-		this.timer.agenda = this.addTestCounter()
+		this.addTimers()
+		this.count++
 		return this 
 	}
 
@@ -51,36 +50,37 @@ export class GoatTest implements IGoatTest {
     ...setDuplicateValues(testConfig.counter.waiting, ['ended', 'elapsed', 'started'])
   }
 
+	private static ignore = ['elapsed', 'started', 'ended', 'id', 'agenda']
+
 	private initTimer(): AnyIndex {
 		return {
 			id: 'testID',
 			started: testConfig.counter.start(),
 			...setDuplicateValues(testConfig.counter.going, ['ended', 'elapsed']),
-			agenda: {}
 		}
 	}
 
-	private addTestCounter(obj: AnyIndex = {}): AnyIndex {
-    Object.keys(this.agenda).forEach((key: string) => {
-      obj[key] = {
+	private addTimers(obj: AnyIndex = {}): void {
+    Object.keys(this.agenda).filter((key: string) => !GoatTest.ignore.includes(key)).forEach((key: string) => {
+      this.agenda[key] = {
+				...this.agenda[key],
         ...GoatTest.unsetTimer,
-        tasks: {}
       }
       Object.keys(this.info!.test).forEach((k: string) => {
-        obj[key].tasks[k] = {
+        this.agenda[key].tasks[k] = {
+					...this.agenda[key].tasks[k],
           ...GoatTest.unsetTimer,
           variants: []
         }
         for(let i = 0; i < this.info!.test[k].length; i++) {
           console.log(this.info!.test[k][i].title || 'no')
-          obj[key].tasks[k].variants.push({
+          this.agenda[key].tasks[k].variants.push({
             title: this.info!.test[k][i].title,
             ...GoatTest.unsetTimer
           })
         }
       })
     })
-    return obj
 	}
 }
 
