@@ -60,22 +60,24 @@ export class GoatTest implements IGoatTest {
 			log.test(chalk.bgWhite(chalk.cyan(' Test #' + (i + 1) + ' ') + chalk.black(this.agenda[key].testName + ' ')))
 			try {
 				Object.keys(this.agenda[key].tasks).forEach((k: string) => {
-					console.log(k)
-					// console.log(this.agenda[key].tasks[k])
 					this.agenda[key].tasks[k].variants.forEach((variant: Variant) => {
-						if (k !== 'classConstructor')	{
-							console.log(variant)
-							console.log(this.agenda[key].tasks[k].fn(...variant.params))
-						}
-						
-
-						// console.log(variant)
+            if (Object.keys(this.agenda[key].tasks).includes('classConstructor')) {
+              if (k !== 'classConstructor')	{
+                const Obj = new this.agenda[key].tasks.classConstructor.fn(
+                  ...this.agenda[key].tasks.classConstructor.variants[0].params || []
+                )
+                Obj.test = this.agenda[key].tasks[k].fn
+                if (Obj.test(...variant.params) === variant.expect) { console.log('pass') }
+              }
+              else {
+                console.log(k)
+              }
+            }
 					})
 				})
 			} catch (err: any) {
 				log.err(err.message)
 			}
-			// console.log(this.agenda[key])
 		})
 		delete this.count
 		delete this.testKeys
