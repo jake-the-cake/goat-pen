@@ -176,3 +176,7 @@ export const goatStringTasks: TaskParams = {
     }
   ]
 }
+
+const quiggleTest = {
+  obj: 'data'
+}

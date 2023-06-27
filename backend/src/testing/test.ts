@@ -6,6 +6,80 @@ import { setDuplicateValues } from "../utils/misc"
 import { log } from "../utils/logs"
 import chalk from "chalk"
 
+import fs from 'fs'
+
+const fileExt = ['js', 'ts']
+const foundTests: AnyIndex = {}
+
+const defaults = {
+	dir: './src',
+	testVariableName: 'goatStringTasks',
+	testingFolder: 'testing'
+}
+
+function parseInvalidJSON(obj: string): AnyIndex {
+	let newObj = {}
+	obj.replace(/'/gm, '"').replace(/{/gm, '{ ').split(':').forEach((word: string, i: number, arr: any[]) => {
+		let splitWord: string | string[] = word.split(' ')
+		// console.log(word)
+		// console.log(arr)
+		if (word.split('')[word.length-1] !== '"' && word.split('')[word.length-1] !== '}') {
+			// console.log(splitWord)
+			splitWord[splitWord.length - 1] = '"' + word.split(' ').at(-1) + '"'
+			arr[i] = splitWord.join(' ')
+		}
+		// console.log(word.trim())
+		if (word.trim().split('')[0] !== '"' && word.trim().split('')[0] !== '{' ) {
+			const arrWord = word.split('[')[1] && word.split('[')[1].split(']')[0]
+			console.log(arrWord)
+			console.log(splitWord)
+			if (word.split('[')[1]) splitWord[0] = word.replace('[' + arrWord + ']', '["' + arrWord + '"]')
+			console.log(splitWord[0])
+			// splitWord[0] = ' "' + word.trim().split(' ')[0].split(',')[0] + '",'
+			// console.log(splitWord)
+			arr[i] = splitWord.join(' ')
+		}
+		// console.log(arr.join(':'))
+		if (i === obj.replace(/'/gm, '"').replace(/{/gm, '{ ').split(':').length - 1) newObj = JSON.parse(arr.join(':'))
+		// return arr.join(':')
+	})
+	return newObj
+}
+
+function findTests(path: string) {
+	const files = fs.readdirSync(path)
+	files.filter((dir: string) => dir !== defaults.testingFolder).forEach((file: any) => {
+		if (file.split('.').length > 1 && fileExt.includes(file.split('.')[1])) {
+		const sourceCode = Buffer.from(fs.readFileSync(path + '/' + file)).toString()
+			if (sourceCode.split(defaults.testVariableName).length > 1) {
+				const counts: any = {
+					open: 0,
+					close: 0,
+					start: null,
+					end: null
+				}
+				sourceCode.split(defaults.testVariableName)[1].replace(/[\t\n]/gm, '').split('').forEach((char: string, i: number) => {
+					if (char === '{') {
+						if (counts.open === 0) counts.start = i
+						counts.open++
+					}
+					if (char === '}') counts.close++
+					if (counts.start && !counts.end && counts.open === counts.close) {
+						counts.end = i + 1
+						foundTests['test_' + String(Object.keys(foundTests).length)] = parseInvalidJSON(sourceCode.split(defaults.testVariableName)[1].replace(/[\t\n]/gm, '').slice(counts.start, counts.end))
+					}
+				})
+			}
+		}
+		else findTests(path + '/' + file)
+	})
+	return foundTests
+}
+
+const testAgenda = findTests('./src')
+// console.log(testAgenda)
+console.log(parseInvalidJSON('{data: \'is here\'}'))
+
 interface PassFailLog {
 	pass: string[]
 	fail: string[]
@@ -164,10 +238,10 @@ const ClassTests: any[] = [
 	// { class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' }
 ]
 
-const FunctionTests: any[] = [
-	{ func: quiggleTest, tasks: goatTestTasks, title: 'Goat Test' },
-	// { func: quiggleTest, tasks: goatTestTasks, title: 'Goat Test' },
-]
+// const FunctionTests: any[] = [
+// 	{ func: quiggleTest, tasks: goatTestTasks, title: 'Goat Test' },
+// 	// { func: quiggleTest, tasks: goatTestTasks, title: 'Goat Test' },
+// ]
 
 
 if (testConfig.runTests === true) {
@@ -175,9 +249,9 @@ if (testConfig.runTests === true) {
 	ClassTests.forEach((test: AnyIndex) => {
 		t.class(test)
 	})
-	FunctionTests.forEach((test: AnyIndex) => {
-		t.func(test)
-	})
+	// FunctionTests.forEach((test: AnyIndex) => {
+	// 	t.func(test)
+	// })
 	t.run()
 
 }
