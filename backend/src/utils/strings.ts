@@ -171,7 +171,7 @@ export const goatStringTasks: TaskParams = {
     {
       params: [TestValues.blank],
       checkProp: 'value',
-      expect: TestValues.updated,
+      expect: TestValues.value,
       title: 'Use previous text on blank string'
     }
   ]

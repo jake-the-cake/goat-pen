@@ -1,10 +1,14 @@
+type PassOrFail = 'pass' | 'fail'
+
 interface Variant {
   title: string
   params: any[]
   pre?: string | string[]
   preParams?: any | any[]
   checkProp?: string
-  expect: any
+  expect: any,
+	actual?: any
+	result?: PassOrFail
 }
 
 interface TaskParams {
@@ -35,6 +39,7 @@ interface TestCounter {
 }
 
 export {
+	PassOrFail,
 	Variant,
 	TaskParams,
 	TestValues,

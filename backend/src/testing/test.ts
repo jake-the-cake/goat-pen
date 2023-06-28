@@ -1,9 +1,9 @@
 import { GoatString, goatStringTasks } from "../utils/strings"
 import { AnyIndex } from "../types/generic"
 import testConfig from "./config"
-import { TaskParams, Variant } from "./types"
-import { setDuplicateValues } from "../utils/misc"
-import { log } from "../utils/logs"
+import { PassOrFail, TaskParams, TestValues, Variant } from "./types"
+import { setDuplicateValues, startTimer, startWatch, stopTimer } from "../utils/misc"
+import { log, testFail, testPass } from "../utils/logs"
 import chalk from "chalk"
 
 import fs from 'fs'
@@ -46,6 +46,8 @@ function parseInvalidJSON(obj: string): AnyIndex {
 	return newObj
 }
 
+
+
 function findTests(path: string) {
 	const files = fs.readdirSync(path)
 	files.filter((dir: string) => dir !== defaults.testingFolder).forEach((file: any) => {
@@ -66,7 +68,7 @@ function findTests(path: string) {
 					if (char === '}') counts.close++
 					if (counts.start && !counts.end && counts.open === counts.close) {
 						counts.end = i + 1
-						foundTests['test_' + String(Object.keys(foundTests).length)] = parseInvalidJSON(sourceCode.split(defaults.testVariableName)[1].replace(/[\t\n]/gm, '').slice(counts.start, counts.end))
+						foundTests['test_' + String(Object.keys(foundTests).length)] = sourceCode.split(defaults.testVariableName)[1].replace(/[\t\n]/gm, '').slice(counts.start, counts.end)
 					}
 				})
 			}
@@ -76,9 +78,9 @@ function findTests(path: string) {
 	return foundTests
 }
 
-const testAgenda = findTests('./src')
+// const testAgenda = findTests('./src')
 // console.log(testAgenda)
-console.log(parseInvalidJSON('{data: \'is here\'}'))
+// console.log(parseInvalidJSON('{data: \'is here\'}'))
 
 interface PassFailLog {
 	pass: string[]
@@ -105,6 +107,7 @@ export class GoatTest implements IGoatTest {
     GoatTest.info = info
 		this.agenda['test_' + this.count] = {
 			testName: info.title,
+			params: info.params,
 			tasks: {
 				...this.filterTasks(new info.class( ...info.params, true).tasks, info.tasks),
 				classConstructor: { fn: info.class }
@@ -128,31 +131,68 @@ export class GoatTest implements IGoatTest {
 		this.count!++
 		return this
 	}
+	
+	private variantResult(result: PassOrFail & string, variant: Partial<Variant>, task: AnyIndex): void {
+		variant.result = result
+		task[result]++
+		switch (result) {
+			case 'pass':
+				testPass(variant.title || 'untitled task variant')
+				break
+			case 'fail':
+				testFail(variant.title || 'untitled task variant')
+				break
+			default:
+				log.err('Did not pass or fail?')
+		}
+	}
+
+	private compare(variant: Variant & AnyIndex, task: AnyIndex): void {
+		if (variant.actual === variant.expect) this.variantResult('pass', variant, task)
+		else this.variantResult('fail', variant, task)
+	}
 
 	public run() {
 		this.testKeys!.forEach((key: string, i: number) => {
 			log.test(chalk.bgWhite(chalk.cyan(' Test #' + (i + 1) + ' ') + chalk.black(this.agenda[key].testName + ' ')))
 			try {
 				Object.keys(this.agenda[key].tasks).forEach((k: string) => {
-					this.agenda[key].tasks[k].variants.forEach((variant: Variant) => {
+					startTimer(this.agenda[key])
+					log.test('Starting task \'' + k + '\' variants')
+					this.agenda[key].tasks[k].variants.forEach((variant: Variant, i: number) => {
+						startTimer(variant)
             if (Object.keys(this.agenda[key].tasks).includes('classConstructor')) {
-              if (k !== 'classConstructor')	{
-                const Obj = new this.agenda[key].tasks.classConstructor.fn(
-                  ...this.agenda[key].tasks.classConstructor.variants[0].params || []
-                )
-                Obj.test = this.agenda[key].tasks[k].fn
-                if (Obj.test(...variant.params) === variant.expect) { console.log('pass') }
-              }
-              else {
-                console.log(k)
-              }
-            }
+							if (k !== 'classConstructor')	{
+								const Obj = new this.agenda[key].tasks.classConstructor.fn(
+									...this.agenda[key].params || []
+									)
+									Obj.test = this.agenda[key].tasks[k].fn
+									variant.actual = Obj.test(...variant.params)
+								}
+								else {
+									variant.actual = new this.agenda[key].tasks[k].fn(...variant.params)
+									if (variant.checkProp) variant.actual = variant.actual[variant.checkProp]
+								}
+								this.compare(variant, this.agenda[key])
+							}
+							stopTimer(variant as any)
+						})
+						stopTimer(this.agenda[key])
+						log.info('Task \'' + k + '\' completed in ' + this.agenda[key].elapsed)
 					})
-				})
-			} catch (err: any) {
-				log.err(err.message)
-			}
+				} catch (err: any) {
+					log.err(err.message)
+					log.warn(err.stack)
+				}
+				const { pass, fail } = this.agenda[key]
+				this.agenda.pass += pass
+				this.agenda.fail += fail
+				log.info('Test \'' + this.agenda[key].testName + '\' completed in ' + this.agenda[key].elapsed)
+			stopTimer(this.agenda as any)
 		})
+		const { pass, fail } = this.agenda
+		log.info((pass + fail) + ' Total Tasks > ' + chalk.green(pass + ' Passed') + ' > ' + chalk.red(fail + ' Failed ') + 'in ' + this.agenda.elapsed)
+		console.log(this.agenda)
 		delete this.count
 		delete this.testKeys
 		// console.log(this)
@@ -168,19 +208,22 @@ export class GoatTest implements IGoatTest {
 	private getTestKeys(): string[] {
 		return Object.keys(this.agenda).filter((key: string) => !GoatTest.ignore.includes(key) && !this.testKeys!.includes(key))
 	}
-
+	
   private static unsetTimer = {
-    ...setDuplicateValues(testConfig.counter.waiting, ['ended', 'elapsed', 'started'])
+    ...setDuplicateValues(testConfig.counter.waiting, ['started', 'ended', 'elapsed'])
   }
-
-	private static ignore: string[] = ['elapsed', 'started', 'ended', 'id', 'agenda', 'testNam']
+	
+	private static ignore: string[] = ['elapsed', 'started', 'ended', 'id', 'agenda', 'testName', 'pass', 'fail'
+	]
 	private testKeys?: string[] = []
 
 	private initTimer(): AnyIndex {
 		return {
 			id: testConfig.testId,
-			started: testConfig.counter.start(),
+			started: startWatch(),
 			...setDuplicateValues(testConfig.counter.going, ['ended', 'elapsed']),
+			pass: 0,
+			fail: 0
 		}
 	}
 
@@ -189,6 +232,8 @@ export class GoatTest implements IGoatTest {
       this.agenda[key] = {
 				...this.agenda[key],
         ...GoatTest.unsetTimer,
+				pass: 0,
+				fail: 0
       }
       Object.keys(GoatTest.info!.tasks).forEach((k: string) => {
 				this.agenda[key].tasks[k] = {
@@ -208,18 +253,6 @@ export class GoatTest implements IGoatTest {
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 function quiggleTest(): GoatTest {
 	return new GoatTest()
 }
@@ -233,77 +266,16 @@ const goatTestTasks: TaskParams = { main: [
 	}
 ]}
 
-const ClassTests: any[] = [
-	{ class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' },
-	// { class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' }
+const Tests: any[] = [
+	{ class: GoatString, params: [TestValues.value], tasks: goatStringTasks, title: 'Goat String' },
+	{ class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' }
 ]
-
-// const FunctionTests: any[] = [
-// 	{ func: quiggleTest, tasks: goatTestTasks, title: 'Goat Test' },
-// 	// { func: quiggleTest, tasks: goatTestTasks, title: 'Goat Test' },
-// ]
 
 
 if (testConfig.runTests === true) {
 	const t = quiggleTest()
-	ClassTests.forEach((test: AnyIndex) => {
+	Tests.forEach((test: AnyIndex) => {
 		t.class(test)
 	})
-	// FunctionTests.forEach((test: AnyIndex) => {
-	// 	t.func(test)
-	// })
 	t.run()
-
 }
-
-
-
-// classTest({Class: GoatString}, 'GoatString by Quiggle')
-//   .then((T: AnyIndex) => {
-//     console.log(T)
-//     const counter: AnyIndex = testCounter(testParams, T.name)
-//       Object.keys(testParams).forEach((key: string): void => {
-//       log.test('Starting test(s) on \'' + key + '\'')
-
-
-//       counter.tests[key].started = new Date().getTime()
-//       testParams[key].forEach((test: AnyIndex) => {
-//         counter.tasks[key].total++
-//         let actual: any
-//         console.log(T)
-//         if (key === 'classInit') { actual = new T.tasks[key](...test.params)}
-//         else actual = T.tasks[key](...test.params)
-//         if (!['object'].includes(typeof actual)) actual = { value: actual }
-//         if (actual && actual[test.expected[0]] === test.expected[1]) {
-//           counter.tasks[key].pass++
-//           testPass('(' + counter.tasks[key].total + ') ' + test.test)
-//         }
-//         else if (actual === null && test.expected[1] === null) {
-//           counter.tasks[key].pass++
-//           testPass('(' + counter.tasks[key].total + ') ' + test.test)
-//         }
-//         else {
-//           counter.tasks[key].fail++
-//           testFail('(' + counter.tasks[key].total + ') ' + test.test)
-//         }
-//         counter.tasks[key].ended = new Date().getTime()
-//         counter.tasks[key].elapsed = counter.tasks[key].ended - counter.tasks[key].started + 'ms'
-//       })
-//       log.info('Testing on \'' + key + '\' completed in ' + counter.tasks[key].elapsed)
-//     }, {what:'the heck'})
-//     counter.ended = new Date().getTime()
-//     counter.elapsed = counter.ended - counter.started + 'ms'
-//     log.info('\'' + counter.name + '\'  completed in ' + counter.elapsed)
-//     let totals = {
-//       fail: 0,
-//       pass: 0,
-//       total: 0
-//     }
-//     Object.keys(counter.tasks).forEach((key: string): void => {
-//       totals.fail += counter.tasks[key].fail
-//       totals.pass += counter.tasks[key].pass
-//       totals.total += counter.tasks[key].total
-//     })
-//     log.info(totals.total + ' Tests run... > ' + chalk.green(totals.pass + ' Passed') + ' > ' + chalk.red(totals.fail + ' Failed'))
-//   })
-//   .catch((err: any) => devLog(err.message, 'err'))
