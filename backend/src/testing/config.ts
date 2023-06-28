@@ -10,7 +10,7 @@ const testConfig = {
 	},
 	testName: 'test',
 	testNameSeparator: '_',
-  version: '0.1.0',
+  version: '0.2.0',
 	testId: randomHex(16)
 }
 

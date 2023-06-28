@@ -152,32 +152,37 @@ export class GoatTest implements IGoatTest {
 		else this.variantResult('fail', variant, task)
 	}
 
+	private testClassTasks(currentTest: AnyIndex, task: AnyIndex, variant: Variant, taskName: string) {
+		if (taskName !== 'classConstructor')	{
+			const Obj = new currentTest.tasks.classConstructor.fn(
+				...currentTest.params || []
+			)
+			Obj.test = task.fn
+			variant.actual = Obj.test(...variant.params)
+		}
+		else {
+			variant.actual = new task.fn(...variant.params)
+			if (variant.checkProp) variant.actual = variant.actual[variant.checkProp]
+		}
+	}
+
 	public run() {
-		this.testKeys!.forEach((key: string, i: number) => {
+		this.testKeys!.forEach((key: string, index: number) => {
 			const currentTest = this.agenda[key]
 					startTimer(currentTest)
-			log.test(chalk.bgWhite(chalk.cyan(' Test #' + (i + 1) + ' ') + chalk.black(currentTest.testName + ' ')))
+			log.test(chalk.bgWhite(chalk.cyan(' Test #' + (index + 1) + ' ') + chalk.black(currentTest.testName + ' ')))
 			try {
 				Object.keys(currentTest.tasks).forEach((k: string) => {
 					const task = currentTest.tasks[k]
 					startTimer(task)
-					log.test('Starting task \'' + k + '\' variants')
-					task.variants.forEach((variant: Variant, i: number) => {
+					log.test('Starting task \'' + k + '\' ' + (task.variants.length > 1 ? 'variants' : ''))
+					task.variants.forEach((variant: Variant) => {
 						startTimer(variant)
             if (Object.keys(currentTest.tasks).includes('classConstructor')) {
-							if (k !== 'classConstructor')	{
-								const Obj = new currentTest.tasks.classConstructor.fn(
-									...currentTest.params || []
-								)
-								Obj.test = task.fn
-								variant.actual = Obj.test(...variant.params)
-							}
-							else {
-								variant.actual = new task.fn(...variant.params)
-								if (variant.checkProp) variant.actual = variant.actual[variant.checkProp]
-							}
-							this.compare(variant, currentTest)
+							this.testClassTasks( currentTest, task, variant, k)
+
 						}
+						this.compare(variant, currentTest)
 						stopTimer(variant as any)
 					})
 					stopTimer(task)
@@ -193,9 +198,10 @@ export class GoatTest implements IGoatTest {
 			stopTimer(currentTest)
 			log.info('Test \'' + currentTest.testName + '\' completed in ' + currentTest.elapsed)
 		})
+		log.test(chalk.bgWhite(chalk.black(' TESTING ENDED > FINALIZING RESULTS ')))
 		const { pass, fail } = this.agenda
 		stopTimer(this.agenda as any)
-		log.info((pass + fail) + ' Total Tasks > ' + chalk.green(pass + ' Passed') + ' > ' + chalk.red(fail + ' Failed ') + 'in ' + this.agenda.elapsed)
+		log.info(chalk.white(pass + fail) + ' Total Tasks > ' + chalk.green(pass + ' Passed') + ' > ' + chalk.red(fail + ' Failed ') + 'in ' + this.agenda.elapsed)
 		// console.log(this.agenda)
 		delete this.count
 		delete this.testKeys
@@ -271,8 +277,8 @@ const goatTestTasks: TaskParams = { main: [
 ]}
 
 const Tests: any[] = [
-	// { class: GoatString, params: [TestValues.value], tasks: goatStringTasks, title: 'Goat String' },
-	{ class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' }
+	{ class: GoatString, params: [TestValues.value], tasks: goatStringTasks, title: 'Goat String' },
+	// { class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' }
 ]
 
 
