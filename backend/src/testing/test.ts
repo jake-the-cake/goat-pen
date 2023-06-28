@@ -147,6 +147,11 @@ export class GoatTest implements IGoatTest {
 		}
 	}
 
+	public test(test: AnyIndex): this {
+		if (test.class) return this.class(test)
+		return this.func(test)
+	}
+
 	private compare(variant: Variant & AnyIndex, task: AnyIndex): void {
 		if (variant.actual === variant.expect) this.variantResult('pass', variant, task)
 		else this.variantResult('fail', variant, task)
@@ -166,6 +171,11 @@ export class GoatTest implements IGoatTest {
 		}
 	}
 
+	private testFunction(task: AnyIndex, variant: Variant): void {
+		variant.actual = task.fn(...variant.params)
+		if (variant.checkProp) variant.actual = variant.actual[variant.checkProp]
+	}
+
 	public run() {
 		this.testKeys!.forEach((key: string, index: number) => {
 			const currentTest = this.agenda[key]
@@ -182,6 +192,7 @@ export class GoatTest implements IGoatTest {
 							this.testClassTasks( currentTest, task, variant, k)
 
 						}
+						else this.testFunction(task, variant)
 						this.compare(variant, currentTest)
 						stopTimer(variant as any)
 					})
@@ -278,14 +289,15 @@ const goatTestTasks: TaskParams = { main: [
 
 const Tests: any[] = [
 	{ class: GoatString, params: [TestValues.value], tasks: goatStringTasks, title: 'Goat String' },
-	// { class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' }
+	{ func: quiggleTest, tasks: goatTestTasks, title: 'Quiggle Test'},
+	{ class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' }
 ]
 
 
 if (testConfig.runTests === true) {
 	const t = quiggleTest()
 	Tests.forEach((test: AnyIndex) => {
-		t.class(test)
+		t.test(test)
 	})
 	t.run()
 }
