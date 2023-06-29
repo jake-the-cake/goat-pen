@@ -9,7 +9,8 @@ import { log } from './utils/logs'
 
 import './auth/server'
 import './testing/server'
-import './testing/test'
+// import './testing/test'
+import './utils/parse'
 
 /** get constants from config file */
 const serverPort = config.constants.conn.port
