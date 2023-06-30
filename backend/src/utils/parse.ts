@@ -1,3 +1,4 @@
+import { type } from "os"
 import { AnyIndex } from "../types/generic"
 import { log } from "./logs"
 
@@ -31,35 +32,49 @@ function parseInvalidJSON(obj: string): AnyIndex {
 }
 
 interface IGoatParse {
-  input: string
-  inputByLine: string[]
-  parseRange: [number, number]
+  input: any
+  output: any
+
+  inputByLine?: string[]
+  parseRange?: [number, number]
   currentRange?: [number, number]
-  output: AnyIndex
 }
 
-class GoatParse implements IGoatParse {
-  input: string
-  inputByLine: string[]
-  output: AnyIndex = {}
-  parseRange: [number, number]
-  currentRange?: [number, number] | undefined
+class GoatParse implements IGoatParse, AnyIndex {
+  input: any
+  output: any
 
-  constructor(input: string) {
-    this.input = input.trim()
-    if (this.input[0] !== '{' ) {
-      // throw log.err('Invalid')
-    }
-    this.inputByLine = input.split('\n')
-    console.log(this.input.split('').length)
-    this.parseRange = [0, this.input.length - 1]
-    this.parse()
-    console.log(this)
+  inputByLine?: string[]
+  parseRange?: [number, number]
+  currentRange?: [number, number]
+
+  constructor(input: any) {
+    this.input = input
+    this.output = null
+    if (typeof input !== 'string') console.log(this.parseError('This package can only work with strings at the moment.'))
+    
+    // this.input = input.trim()
+    // if (this.input[0] !== '{') {
+    //   // throw log.err('Invalid')
+    // }
+    // this.inputByLine = input.split('\n')
+    // console.log(this.input.split('').length)
+    // this.parseRange = [0, this.input.length - 1]
+    // this.parse()
+    // console.log(this)
+  }
+
+  public toObject() {
+
   }
 
   private parse(): AnyIndex {
 
     return this.output
+  }
+
+  private parseError(message: string = 'A parsing error has occurred.') {
+    return new Error('<ParseError> ' + message)
   }
 }
 
