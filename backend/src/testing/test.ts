@@ -83,8 +83,8 @@ function findTests(path: string) {
 // console.log(parseInvalidJSON('{data: \'is here\'}'))
 
 interface PassFailLog {
-	pass: string[]
-	fail: string[]
+	pass: Partial<Variant>[]
+	fail: Partial<Variant>[]
 }
 
 interface IGoatTest {
@@ -92,7 +92,7 @@ interface IGoatTest {
 	results: PassFailLog
 }
 
-export class GoatTest implements IGoatTest {
+export class GoatTest implements IGoatTest, AnyIndex {
 	private static info?: AnyIndex
 	private count?: number = 1
 	agenda: AnyIndex
@@ -106,7 +106,7 @@ export class GoatTest implements IGoatTest {
 	public class(info: AnyIndex): this {
     GoatTest.info = info
 		this.agenda['test_' + this.count] = {
-			testName: info.title,
+			title: info.title,
 			params: info.params,
 			tasks: {
 				...this.filterTasks(new info.class( ...info.params, true).tasks, info.tasks),
@@ -119,7 +119,7 @@ export class GoatTest implements IGoatTest {
 	public func(info: AnyIndex): this {
 		GoatTest.info = info
 		this.agenda['test_' + this.count] = {
-			testName: info.title,
+			title: info.title,
 			tasks: { main: { fn: info.func }}
 		}
 		return this.initTask()
@@ -138,9 +138,11 @@ export class GoatTest implements IGoatTest {
 		switch (result) {
 			case 'pass':
 				testPass(variant.title || 'untitled task variant')
+				this.results.pass.push(variant)
 				break
 			case 'fail':
 				testFail(variant.title || 'untitled task variant')
+				this.results.fail.push(variant)
 				break
 			default:
 				log.err('Did not pass or fail?')
@@ -176,11 +178,11 @@ export class GoatTest implements IGoatTest {
 		if (variant.checkProp) variant.actual = variant.actual[variant.checkProp]
 	}
 
-	public run() {
+	public run(): this {
 		this.testKeys!.forEach((key: string, index: number) => {
 			const currentTest = this.agenda[key]
 					startTimer(currentTest)
-			log.test(chalk.bgWhite(chalk.cyan(' Test #' + (index + 1) + ' ') + chalk.black(currentTest.testName + ' ')))
+			log.test(chalk.bgWhite(chalk.cyan(' Test #' + (index + 1) + ' ') + chalk.black(currentTest.title + ' ')))
 			try {
 				Object.keys(currentTest.tasks).forEach((k: string) => {
 					const task = currentTest.tasks[k]
@@ -203,11 +205,10 @@ export class GoatTest implements IGoatTest {
 				log.err(err.message)
 				log.warn(err.stack)
 			}
-			const { pass, fail } = currentTest
-			this.agenda.pass += pass
-			this.agenda.fail += fail
+			this.agenda.pass += currentTest.pass
+			this.agenda.fail += currentTest.fail
 			stopTimer(currentTest)
-			log.info('Test \'' + currentTest.testName + '\' completed in ' + currentTest.elapsed)
+			log.info('Test \'' + currentTest.title + '\' completed in ' + currentTest.elapsed)
 		})
 		log.test(chalk.bgWhite(chalk.black(' TESTING ENDED > FINALIZING RESULTS ')))
 		const { pass, fail } = this.agenda
@@ -217,6 +218,7 @@ export class GoatTest implements IGoatTest {
 		delete this.count
 		delete this.testKeys
 		// console.log(this)
+		return this
 	}
 
 	private filterTasks(proto: AnyIndex, tasks: AnyIndex): AnyIndex {
@@ -234,13 +236,13 @@ export class GoatTest implements IGoatTest {
     ...setDuplicateValues(testConfig.counter.waiting, ['started', 'ended', 'elapsed'])
   }
 	
-	private static ignore: string[] = ['elapsed', 'started', 'ended', 'id', 'agenda', 'testName', 'pass', 'fail'
+	public static ignore: string[] = ['elapsed', 'started', 'ended', 'id', 'agenda', 'title', 'pass', 'fail'
 	]
 	private testKeys?: string[] = []
 
 	private initTimer(): AnyIndex {
 		return {
-			id: testConfig.testId,
+			id: testConfig.testId(testConfig.idLength),
 			started: startWatch(),
 			...setDuplicateValues(testConfig.counter.going, ['ended', 'elapsed']),
 			pass: 0,
@@ -281,7 +283,7 @@ function quiggleTest(): GoatTest {
 const goatTestTasks: TaskParams = { main: [
 	{
 		params: [],
-		title: 'test this thing',
+		title: 'Init counter to 1',
 		checkProp: 'count',
 		expect: 1
 	}
@@ -290,14 +292,107 @@ const goatTestTasks: TaskParams = { main: [
 const Tests: any[] = [
 	{ class: GoatString, params: [TestValues.value], tasks: goatStringTasks, title: 'Goat String' },
 	{ func: quiggleTest, tasks: goatTestTasks, title: 'Quiggle Test'},
-	{ class: GoatString, params: ['hi'], tasks: goatStringTasks, title: 'Goat String' }
 ]
 
+interface SortedStrings {
+	[key: string]: string[] | []
+}
 
-if (testConfig.runTests === true) {
-	const t = quiggleTest()
-	Tests.forEach((test: AnyIndex) => {
-		t.test(test)
+interface SortingOptions {
+	lookFor: string | string[]
+	exactMatch?: boolean
+	valueName?: string
+}
+
+function sortKeysThatContain(valueArr: string[], options: SortingOptions | string | string[]): SortedStrings {
+	if (typeof options === 'string') options = { lookFor: options }
+	options = options as SortingOptions
+	if (typeof options.lookFor === 'string') options.lookFor = [options.lookFor]
+	let varNames = ['isValue', 'notIsValue']
+	if (options.valueName) varNames.forEach((name: string, i: number): void => {
+		varNames[i] = name.replace('Value', (options as SortingOptions).valueName!)}
+	)
+	const obj: AnyIndex = {[varNames[0]]: [], [varNames[1]]: []}
+	valueArr.forEach((key: string) => {
+		((options as SortingOptions).lookFor as string[]).forEach((k: string) => {
+			if (key.includes(k)) obj[varNames[0]].push(key)
+			else obj[varNames[1]].push(key)
+		})
 	})
-	t.run()
+	return obj
+}
+
+// function sortKeysThatIgnore(valueArr: string[], options: SortingOptions | string | string[]): SortedStrings {
+// 	console.log(valueArr)
+// 	if (typeof options === 'string') options = { lookFor: [...options] }
+// 	options = options as SortingOptions
+// 	// options.lookFor = [...options.lookFor]
+// 	let varNames = ['isValue', 'notIsValue']
+// 	if (options.valueName) varNames.forEach((name: string, i: number): void => {
+// 		varNames[i] = name.replace('Value', (options as SortingOptions).valueName!)}
+// 	)
+// 	const obj: AnyIndex = {[varNames[0]]: [], [varNames[1]]: []}
+// 	valueArr.forEach((key: string) => {
+// 		((options as SortingOptions).lookFor as string[]).forEach((k: string) => {
+// 			if (key.includes(k)) obj[varNames[0]].push(key)
+// 			else obj[varNames[1]].push(key)
+// 		})
+// 	})
+// 	// console.log(options)
+// 	return obj
+// }
+
+export function runQuiggleTest() {
+	if (testConfig.runTests === true) {
+		const t = quiggleTest()
+		Tests.forEach((test: AnyIndex) => {
+			t.test(test)
+		})
+		const agenda = t.run().agenda
+		const { isTest, notIsTest } = sortKeysThatContain(
+			Object.keys(agenda),
+			{
+				lookFor: testConfig.testObjectVariableName + testConfig.testObjectVariableSeparator,
+				valueName: 'Test'
+			}
+		)
+		function mainBodyInfo(obj: AnyIndex = {}): AnyIndex {
+			notIsTest.forEach((key: string) => obj[key] = agenda[key])
+			return obj
+		}
+		fetch('http://localhost:21716/insert/new', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			body: new URLSearchParams(mainBodyInfo())
+		})
+		.then((data: AnyIndex) => {
+			return data.json()
+		})
+		.then((data: AnyIndex) => {
+			console.log(data)
+			isTest.forEach((key: string): void => {
+				const { notIsTask } = sortKeysThatContain(Object.keys(agenda[key]), {
+					lookFor: 'tasks',
+					valueName: 'Task'
+				})
+				function addTestData(obj: AnyIndex = {}): AnyIndex {
+					notIsTask.forEach((k: string) => obj[k] = agenda[key][k])
+					return obj
+				}
+				fetch('http://localhost:21716/insert/tests', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					body: new URLSearchParams({...addTestData(), id: data.id})
+				}).then((data: any) => data.json()).then((data: any) => console.log(data))
+				// console.log(addTestData())
+			})
+			// console.log(data)
+		})
+
+		// console.log(t.agenda)
+	}
 }

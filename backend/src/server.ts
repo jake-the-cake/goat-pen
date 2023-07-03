@@ -8,8 +8,6 @@ import { apiRouter } from './routes/router'
 import { log } from './utils/logs'
 
 import './auth/server'
-import './testing/server'
-// import './testing/test'
 import './utils/parse'
 
 /** get constants from config file */
@@ -17,7 +15,10 @@ const serverPort = config.constants.conn.port
 const databaseUri = config.constants.mongo.dev
 
 /** connect db & connect server */
-connectDB(databaseUri, startServer)
+connectDB({
+	uri: databaseUri,
+	name: 'Goat Pen'
+}, startServer)
 
 /** function to start server */
 function startServer(): void {
@@ -37,6 +38,6 @@ function startServer(): void {
 	app.use('/api', apiRouter)
 
 	http.createServer(app).listen(serverPort, function(){
-		log.info(`Server running on port ${serverPort}...`)
+		log.info(`Goat Pen server running on port ${serverPort}`)
 	})
 }

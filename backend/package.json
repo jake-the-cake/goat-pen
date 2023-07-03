@@ -4,17 +4,15 @@
   "description": "Server for QGL",
   "main": "lib/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon lib/index.js",
+    "test": "nodemon lib/testing/server.js",
+    "dev": "nodemon lib/server.js",
     "comp": "tsc -w"
   },
   "author": "jake-the-cake",
   "license": "ISC",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
     "chalk": "4.1.2",
     "crypto-js": "^4.1.1",
-    "cryptr": "^6.2.0",
     "express": "^4.18.2",
     "http": "^0.0.1-security",
     "mongoose": "^7.2.0",

@@ -2,6 +2,8 @@ import { type } from "os"
 import { AnyIndex } from "../types/generic"
 import { log } from "./logs"
 
+console.log('parser')
+
 function parseInvalidJSON(obj: string): AnyIndex {
 	let newObj = {}
 	obj.replace(/'/gm, '"').replace(/{/gm, '{ ').split(':').forEach((word: string, i: number, arr: any[]) => {
