@@ -7,9 +7,17 @@ dotenv.config()
 const testConfig: AnyIndex = {
 	// main shutoff
 	runTests: true,
+	// formatting
+	testObjectVariableName: 'test',
+	testObjectVariableSeparator: '_',
 	// testing config settings
 	testingPort: process.env.TESTING_PORT_NUMBER,
 	testingDbUri: process.env.TESTING_DB_URI_DEV,
+	testingDevHost: () => 'http://localhost:' + testConfig.testingPort,
+	prefixInfo: {
+		len: () => testConfig.testObjectVariableName.length + testConfig.testObjectVariableSeparator.length,
+		prefix: () => testConfig.testObjectVariableName + testConfig.testObjectVariableSeparator
+	},
 	counter: {
 		going: 'in progress',
 		waiting: 'not started',
@@ -18,11 +26,12 @@ const testConfig: AnyIndex = {
 	},
 	idLength: 12,
 	testId: (len: number = testConfig.idLength) => randomHex(len),
-	// formatting
-	testObjectVariableName: 'test',
-	testObjectVariableSeparator: '_',
+	// ignore
+	ignoreResultProps: [
+		'pass', 'fail', 'elapsed', 'started', 'ended'
+	],
 	// information
-  version: '0.2.1',
+  version: '0.2.2',
 	author: 'Quiet Goat Labs',
 	contributors: [
 		'Jason Thompson'

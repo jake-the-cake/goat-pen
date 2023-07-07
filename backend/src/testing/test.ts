@@ -6,77 +6,75 @@ import { setDuplicateValues, startTimer, startWatch, stopTimer } from "../utils/
 import { log, testFail, testPass } from "../utils/logs"
 import chalk from "chalk"
 
-import fs from 'fs'
+// import fs from 'fs'
 
-const fileExt = ['js', 'ts']
-const foundTests: AnyIndex = {}
+// const fileExt = ['js', 'ts']
+// const foundTests: AnyIndex = {}
 
-const defaults = {
-	dir: './src',
-	testVariableName: 'goatStringTasks',
-	testingFolder: 'testing'
-}
+// const defaults = {
+// 	dir: './src',
+// 	testVariableName: 'goatStringTasks',
+// 	testingFolder: 'testing'
+// }
 
-function parseInvalidJSON(obj: string): AnyIndex {
-	let newObj = {}
-	obj.replace(/'/gm, '"').replace(/{/gm, '{ ').split(':').forEach((word: string, i: number, arr: any[]) => {
-		let splitWord: string | string[] = word.split(' ')
-		// console.log(word)
-		// console.log(arr)
-		if (word.split('')[word.length-1] !== '"' && word.split('')[word.length-1] !== '}') {
-			// console.log(splitWord)
-			splitWord[splitWord.length - 1] = '"' + word.split(' ').at(-1) + '"'
-			arr[i] = splitWord.join(' ')
-		}
-		// console.log(word.trim())
-		if (word.trim().split('')[0] !== '"' && word.trim().split('')[0] !== '{' ) {
-			const arrWord = word.split('[')[1] && word.split('[')[1].split(']')[0]
-			console.log(arrWord)
-			console.log(splitWord)
-			if (word.split('[')[1]) splitWord[0] = word.replace('[' + arrWord + ']', '["' + arrWord + '"]')
-			console.log(splitWord[0])
-			// splitWord[0] = ' "' + word.trim().split(' ')[0].split(',')[0] + '",'
-			// console.log(splitWord)
-			arr[i] = splitWord.join(' ')
-		}
-		// console.log(arr.join(':'))
-		if (i === obj.replace(/'/gm, '"').replace(/{/gm, '{ ').split(':').length - 1) newObj = JSON.parse(arr.join(':'))
-		// return arr.join(':')
-	})
-	return newObj
-}
+// function parseInvalidJSON(obj: string): AnyIndex {
+// 	let newObj = {}
+// 	obj.replace(/'/gm, '"').replace(/{/gm, '{ ').split(':').forEach((word: string, i: number, arr: any[]) => {
+// 		let splitWord: string | string[] = word.split(' ')
+// 		// console.log(word)
+// 		// console.log(arr)
+// 		if (word.split('')[word.length-1] !== '"' && word.split('')[word.length-1] !== '}') {
+// 			// console.log(splitWord)
+// 			splitWord[splitWord.length - 1] = '"' + word.split(' ').at(-1) + '"'
+// 			arr[i] = splitWord.join(' ')
+// 		}
+// 		// console.log(word.trim())
+// 		if (word.trim().split('')[0] !== '"' && word.trim().split('')[0] !== '{' ) {
+// 			const arrWord = word.split('[')[1] && word.split('[')[1].split(']')[0]
+// 			console.log(arrWord)
+// 			console.log(splitWord)
+// 			if (word.split('[')[1]) splitWord[0] = word.replace('[' + arrWord + ']', '["' + arrWord + '"]')
+// 			console.log(splitWord[0])
+// 			// splitWord[0] = ' "' + word.trim().split(' ')[0].split(',')[0] + '",'
+// 			// console.log(splitWord)
+// 			arr[i] = splitWord.join(' ')
+// 		}
+// 		// console.log(arr.join(':'))
+// 		if (i === obj.replace(/'/gm, '"').replace(/{/gm, '{ ').split(':').length - 1) newObj = JSON.parse(arr.join(':'))
+// 		// return arr.join(':')
+// 	})
+// 	return newObj
+// }
 
-
-
-function findTests(path: string) {
-	const files = fs.readdirSync(path)
-	files.filter((dir: string) => dir !== defaults.testingFolder).forEach((file: any) => {
-		if (file.split('.').length > 1 && fileExt.includes(file.split('.')[1])) {
-		const sourceCode = Buffer.from(fs.readFileSync(path + '/' + file)).toString()
-			if (sourceCode.split(defaults.testVariableName).length > 1) {
-				const counts: any = {
-					open: 0,
-					close: 0,
-					start: null,
-					end: null
-				}
-				sourceCode.split(defaults.testVariableName)[1].replace(/[\t\n]/gm, '').split('').forEach((char: string, i: number) => {
-					if (char === '{') {
-						if (counts.open === 0) counts.start = i
-						counts.open++
-					}
-					if (char === '}') counts.close++
-					if (counts.start && !counts.end && counts.open === counts.close) {
-						counts.end = i + 1
-						foundTests['test_' + String(Object.keys(foundTests).length)] = sourceCode.split(defaults.testVariableName)[1].replace(/[\t\n]/gm, '').slice(counts.start, counts.end)
-					}
-				})
-			}
-		}
-		else findTests(path + '/' + file)
-	})
-	return foundTests
-}
+// function findTests(path: string) {
+// 	const files = fs.readdirSync(path)
+// 	files.filter((dir: string) => dir !== defaults.testingFolder).forEach((file: any) => {
+// 		if (file.split('.').length > 1 && fileExt.includes(file.split('.')[1])) {
+// 		const sourceCode = Buffer.from(fs.readFileSync(path + '/' + file)).toString()
+// 			if (sourceCode.split(defaults.testVariableName).length > 1) {
+// 				const counts: any = {
+// 					open: 0,
+// 					close: 0,
+// 					start: null,
+// 					end: null
+// 				}
+// 				sourceCode.split(defaults.testVariableName)[1].replace(/[\t\n]/gm, '').split('').forEach((char: string, i: number) => {
+// 					if (char === '{') {
+// 						if (counts.open === 0) counts.start = i
+// 						counts.open++
+// 					}
+// 					if (char === '}') counts.close++
+// 					if (counts.start && !counts.end && counts.open === counts.close) {
+// 						counts.end = i + 1
+// 						foundTests['test_' + String(Object.keys(foundTests).length)] = sourceCode.split(defaults.testVariableName)[1].replace(/[\t\n]/gm, '').slice(counts.start, counts.end)
+// 					}
+// 				})
+// 			}
+// 		}
+// 		else findTests(path + '/' + file)
+// 	})
+// 	return foundTests
+// }
 
 // const testAgenda = findTests('./src')
 // console.log(testAgenda)
@@ -349,49 +347,143 @@ export function runQuiggleTest() {
 			t.test(test)
 		})
 		const agenda = t.run().agenda
-		const { isTest, notIsTest } = sortKeysThatContain(
-			Object.keys(agenda),
-			{
-				lookFor: testConfig.testObjectVariableName + testConfig.testObjectVariableSeparator,
-				valueName: 'Test'
+		// const { isTest, notIsTest } = sortKeysThatContain(
+		// 	Object.keys(agenda),
+		// 	{
+		// 		lookFor: testConfig.testObjectVariableName + testConfig.testObjectVariableSeparator,
+		// 		valueName: 'Test'
+		// 	}
+		// )
+		// function mainBodyInfo(obj: AnyIndex = {}): AnyIndex {
+		// 	notIsTest.forEach((key: string) => obj[key] = agenda[key])
+		// 	return obj
+		// }
+
+		interface ResultInformation {
+			pass: number
+      fail: number
+      started: number | string
+      ended: number | string
+      elapsed: string
+		}
+
+		interface Agenda {
+			agendaInfo: {
+				id: string
+			} & ResultInformation
+			testInfo: (ResultInformation & AnyIndex)[]
+			taskInfo: (ResultInformation & AnyIndex)[]
+			variantInfo: (ResultInformation & AnyIndex)[]
+		}
+
+		function fillResultObject(sourceObj: AnyIndex, obj: Partial<ResultInformation> & AnyIndex = {}): ResultInformation {
+			testConfig.ignoreResultProps.forEach((objKey: string) => {
+				if (sourceObj[objKey] !== undefined) obj[objKey] = sourceObj[objKey]
+			})
+			return obj as ResultInformation
+		}
+
+		async function apiCall(endpoint: string, options?: AnyIndex): Promise<AnyIndex> {
+			return await fetch(testConfig.testingDevHost() + endpoint, { ...options }).then((d: AnyIndex) => d.json())
+		}
+
+		function divideAgenda(sourceObj: AnyIndex, obj: Agenda | AnyIndex = {}): AnyIndex {
+			obj.agendaInfo = {
+				id: sourceObj.id,
+				tests: [],
+				...fillResultObject(sourceObj)
 			}
-		)
-		function mainBodyInfo(obj: AnyIndex = {}): AnyIndex {
-			notIsTest.forEach((key: string) => obj[key] = agenda[key])
+			obj.testInfo = []
+			obj.taskInfo = []
+			obj.variantInfo = []
+
+			const apiAgenda = apiCall('/insert/agenda', {
+				method: 'POST', 
+				body: new URLSearchParams(obj.agendaInfo)
+			})
+			console.log(apiAgenda)
+
+			Object.keys(sourceObj).filter((k: string) => k.slice(0, testConfig.prefixInfo.len()) === testConfig.prefixInfo.prefix()).forEach((testKey: string, testIdx: number) => {
+				obj.testInfo.push({
+					id: sourceObj.id,
+					testKey,
+					title: sourceObj[testKey].title,
+					...fillResultObject(sourceObj[testKey])
+				})
+				const apiTests = apiCall('/insert/test', {
+					method: 'POST',
+					body: new URLSearchParams({
+						...obj.testInfo[testIdx],
+						id: sourceObj.id
+					})
+				})
+				console.log(apiTests)
+				Object.keys(sourceObj[testKey].tasks).forEach((taskKey: string) => {
+					obj.taskInfo.push({
+						id: sourceObj.id,
+						parentTestKey: testKey,
+						taskKey,
+						...fillResultObject(sourceObj[testKey].tasks[taskKey])
+					})
+					const apiTasks = apiCall('/insert/task', {
+						method: 'POST',
+						body: new URLSearchParams({
+							...obj.testInfo[testIdx],
+							id: sourceObj.id
+						})
+					})
+					sourceObj[testKey].tasks[taskKey].variants.forEach((variant: Variant) => {
+						obj.variantInfo.push({
+							id: sourceObj.id,
+							parentTestKey: testKey,
+							parentTaskKey: taskKey,
+							...variant,
+							params: JSON.stringify(variant.params)
+						})
+					})
+				})
+			})
+
+
+
+			// console.log(obj)
+
 			return obj
 		}
-		fetch('http://localhost:21716/insert/new', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-			body: new URLSearchParams(mainBodyInfo())
-		})
-		.then((data: AnyIndex) => {
-			return data.json()
-		})
-		.then((data: AnyIndex) => {
-			console.log(data)
-			isTest.forEach((key: string): void => {
-				const { notIsTask } = sortKeysThatContain(Object.keys(agenda[key]), {
-					lookFor: 'tasks',
-					valueName: 'Task'
-				})
-				function addTestData(obj: AnyIndex = {}): AnyIndex {
-					notIsTask.forEach((k: string) => obj[k] = agenda[key][k])
-					return obj
-				}
-				fetch('http://localhost:21716/insert/tests', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded',
-					},
-					body: new URLSearchParams({...addTestData(), id: data.id})
-				}).then((data: any) => data.json()).then((data: any) => console.log(data))
-				// console.log(addTestData())
-			})
-			// console.log(data)
-		})
+		const divAgenda = divideAgenda(agenda)
+		// fetch('http://localhost:21716/insert/new', {
+		// 	method: 'POST',
+		// 	headers: {
+		// 		'Content-Type': 'application/x-www-form-urlencoded',
+		// 	},
+		// 	// body: new URLSearchParams(mainBodyInfo())
+		// 	body: new URLSearchParams(divAgenda.agendaInfo)
+		// })
+		// .then((data: AnyIndex) => {
+		// 	console.log(data.json())
+		// })
+		// .then((data: AnyIndex) => {
+		// 	console.log(data)
+		// 	isTest.forEach((key: string): void => {
+		// 		const { notIsTask } = sortKeysThatContain(Object.keys(agenda[key]), {
+		// 			lookFor: 'tasks',
+		// 			valueName: 'Task'
+		// 		})
+		// 		function addTestData(obj: AnyIndex = {}): AnyIndex {
+		// 			notIsTask.forEach((k: string) => obj[k] = agenda[key][k])
+		// 			return obj
+		// 		}
+		// 		fetch('http://localhost:21716/insert/tests', {
+		// 			method: 'POST',
+		// 			headers: {
+		// 				'Content-Type': 'application/x-www-form-urlencoded',
+		// 			},
+		// 			body: new URLSearchParams({...addTestData(), id: data.id})
+		// 		}).then((data: any) => data.json()).then((data: any) => console.log(data))
+		// 		// console.log(addTestData())
+		// 	})
+		// 	// console.log(data)
+		// })
 
 		// console.log(t.agenda)
 	}
