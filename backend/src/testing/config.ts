@@ -11,8 +11,8 @@ const testConfig: AnyIndex = {
 	testObjectVariableName: 'test',
 	testObjectVariableSeparator: '_',
 	// testing config settings
-	testingPort: process.env.TESTING_PORT_NUMBER,
-	testingDbUri: process.env.TESTING_DB_URI_DEV,
+	testingPort: process.env.TESTING_PORT_NUMBER || 9999,
+	testingDbUri: process.env.TESTING_DB_URI_DEV || '',
 	testingDevHost: () => 'http://localhost:' + testConfig.testingPort,
 	prefixInfo: {
 		len: () => testConfig.testObjectVariableName.length + testConfig.testObjectVariableSeparator.length,
