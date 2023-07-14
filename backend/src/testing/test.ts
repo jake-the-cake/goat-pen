@@ -401,7 +401,7 @@ export function runQuiggleTest() {
 				method: 'POST', 
 				body: new URLSearchParams(obj.agendaInfo)
 			})
-			console.log(apiAgenda)
+			// console.log(apiAgenda)
 
 			Object.keys(sourceObj).filter((k: string) => k.slice(0, testConfig.prefixInfo.len()) === testConfig.prefixInfo.prefix()).forEach((testKey: string, testIdx: number) => {
 				obj.testInfo.push({
@@ -410,38 +410,44 @@ export function runQuiggleTest() {
 					title: sourceObj[testKey].title,
 					...fillResultObject(sourceObj[testKey])
 				})
-				const apiTests = apiCall('/insert/test', {
+
+				apiCall('/insert/test', {
 					method: 'POST',
 					body: new URLSearchParams({
 						...obj.testInfo[testIdx],
 						id: sourceObj.id
 					})
 				})
-				console.log(apiTests)
-				Object.keys(sourceObj[testKey].tasks).forEach((taskKey: string) => {
-					obj.taskInfo.push({
-						id: sourceObj.id,
-						parentTestKey: testKey,
-						taskKey,
-						...fillResultObject(sourceObj[testKey].tasks[taskKey])
-					})
-					const apiTasks = apiCall('/insert/task', {
-						method: 'POST',
-						body: new URLSearchParams({
-							...obj.testInfo[testIdx],
-							id: sourceObj.id
-						})
-					})
-					sourceObj[testKey].tasks[taskKey].variants.forEach((variant: Variant) => {
-						obj.variantInfo.push({
+				.then((data: AnyIndex) => {
+					Object.keys(sourceObj[testKey].tasks).forEach((taskKey: string, taskIdx: number) => {
+						obj.taskInfo.push({
 							id: sourceObj.id,
 							parentTestKey: testKey,
-							parentTaskKey: taskKey,
-							...variant,
-							params: JSON.stringify(variant.params)
+							taskKey,
+							...fillResultObject(sourceObj[testKey].tasks[taskKey])
+						})
+						apiCall('/insert/task', {
+							method: 'POST',
+							body: new URLSearchParams({
+								...obj.taskInfo[taskIdx],
+								id: sourceObj.id
+							})
+						})
+						.then((data: AnyIndex) => {
+							console.log(data)
+						})
+						sourceObj[testKey].tasks[taskKey].variants.forEach((variant: Variant) => {
+							obj.variantInfo.push({
+								id: sourceObj.id,
+								parentTestKey: testKey,
+								parentTaskKey: taskKey,
+								...variant,
+								params: JSON.stringify(variant.params)
+							})
 						})
 					})
 				})
+				
 			})
 
 

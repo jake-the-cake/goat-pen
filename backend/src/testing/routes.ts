@@ -32,9 +32,9 @@ router
 		log.log(`** Adding test '${req.body.title}' to agenda`)
 
 		const foundAgenda = await TestingModels.data.find({id: req.body.id})
-		console.log(foundAgenda)
+		// console.log(foundAgenda)
 		const newTest = new TestingModels.tests({
-			title: req.body.title, info: req.body
+			title: req.body.title, info: req.body, tasks: []
 		})
 		try {
 			foundAgenda[0].tests.push(newTest._id)
@@ -51,17 +51,18 @@ router
 router
 	.post('/insert/task', async function(req: ReqType, res: ResType): Promise<void> {
 		log.log(`** Adding task '${req.body.taskKey}' to '${req.body.parentTestKey}'`)
+		// console.log(req.body)
 
-		const foundAgenda = await TestingModels.data.find({_id: req.body._id})
-		console.log(foundAgenda)
-		const newTest = new TestingModels.tests({
-			title: req.body.title, info: req.body
+		const foundAgenda = await TestingModels.data.find({id: req.body.id})
+		// console.log(foundAgenda)
+		const newTask = new TestingModels.tests({
+			title: req.body.title, info: req.body, 
 		})
 		try {
-			foundAgenda[0].tests.push(newTest._id)
+			foundAgenda[0].tests.push(newTask._id)
 			foundAgenda[0].save()
 
-			res.status(201).json(foundAgenda[0])
+			res.status(201).json(foundAgenda[0] || {})
 		} catch (err: any) {
 			log.err(err.message)
 			log.warn(err.stack)

@@ -1,4 +1,4 @@
-import { Mongoose, Schema, model } from "mongoose"
+import { Schema, model } from "mongoose"
 
 const info = {
 	started: Number || String,
@@ -36,9 +36,21 @@ const Tests = new Schema({
 	versionKey: false
 })
 
+const Tasks = new Schema({
+	// title: String,
+	variants: {
+		type: [ Schema.Types.ObjectId ],
+		default: []
+	},
+	info
+}, {
+	versionKey: false
+})
+
 const TestingModels = {
 	data:	model('Agenda', Data),
-	tests: model('Tests', Tests)
+	tests: model('Tests', Tests),
+	tasks: model('Tasks', Tasks),
 }
 
 export default TestingModels
