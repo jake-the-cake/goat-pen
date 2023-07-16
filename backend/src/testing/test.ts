@@ -320,26 +320,6 @@ function sortKeysThatContain(valueArr: string[], options: SortingOptions | strin
 	return obj
 }
 
-// function sortKeysThatIgnore(valueArr: string[], options: SortingOptions | string | string[]): SortedStrings {
-// 	console.log(valueArr)
-// 	if (typeof options === 'string') options = { lookFor: [...options] }
-// 	options = options as SortingOptions
-// 	// options.lookFor = [...options.lookFor]
-// 	let varNames = ['isValue', 'notIsValue']
-// 	if (options.valueName) varNames.forEach((name: string, i: number): void => {
-// 		varNames[i] = name.replace('Value', (options as SortingOptions).valueName!)}
-// 	)
-// 	const obj: AnyIndex = {[varNames[0]]: [], [varNames[1]]: []}
-// 	valueArr.forEach((key: string) => {
-// 		((options as SortingOptions).lookFor as string[]).forEach((k: string) => {
-// 			if (key.includes(k)) obj[varNames[0]].push(key)
-// 			else obj[varNames[1]].push(key)
-// 		})
-// 	})
-// 	// console.log(options)
-// 	return obj
-// }
-
 export function runQuiggleTest() {
 	if (testConfig.runTests === true) {
 		const t = quiggleTest()
@@ -347,17 +327,6 @@ export function runQuiggleTest() {
 			t.test(test)
 		})
 		const agenda = t.run().agenda
-		// const { isTest, notIsTest } = sortKeysThatContain(
-		// 	Object.keys(agenda),
-		// 	{
-		// 		lookFor: testConfig.testObjectVariableName + testConfig.testObjectVariableSeparator,
-		// 		valueName: 'Test'
-		// 	}
-		// )
-		// function mainBodyInfo(obj: AnyIndex = {}): AnyIndex {
-		// 	notIsTest.forEach((key: string) => obj[key] = agenda[key])
-		// 	return obj
-		// }
 
 		interface ResultInformation {
 			pass: number
@@ -457,40 +426,5 @@ export function runQuiggleTest() {
 			return obj
 		}
 		const divAgenda = divideAgenda(agenda)
-		// fetch('http://localhost:21716/insert/new', {
-		// 	method: 'POST',
-		// 	headers: {
-		// 		'Content-Type': 'application/x-www-form-urlencoded',
-		// 	},
-		// 	// body: new URLSearchParams(mainBodyInfo())
-		// 	body: new URLSearchParams(divAgenda.agendaInfo)
-		// })
-		// .then((data: AnyIndex) => {
-		// 	console.log(data.json())
-		// })
-		// .then((data: AnyIndex) => {
-		// 	console.log(data)
-		// 	isTest.forEach((key: string): void => {
-		// 		const { notIsTask } = sortKeysThatContain(Object.keys(agenda[key]), {
-		// 			lookFor: 'tasks',
-		// 			valueName: 'Task'
-		// 		})
-		// 		function addTestData(obj: AnyIndex = {}): AnyIndex {
-		// 			notIsTask.forEach((k: string) => obj[k] = agenda[key][k])
-		// 			return obj
-		// 		}
-		// 		fetch('http://localhost:21716/insert/tests', {
-		// 			method: 'POST',
-		// 			headers: {
-		// 				'Content-Type': 'application/x-www-form-urlencoded',
-		// 			},
-		// 			body: new URLSearchParams({...addTestData(), id: data.id})
-		// 		}).then((data: any) => data.json()).then((data: any) => console.log(data))
-		// 		// console.log(addTestData())
-		// 	})
-		// 	// console.log(data)
-		// })
-
-		// console.log(t.agenda)
 	}
 }
