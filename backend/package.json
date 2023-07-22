@@ -6,7 +6,8 @@
   "scripts": {
     "test": "nodemon lib/testing/server.js",
     "dev": "nodemon lib/server.js",
-    "comp": "tsc -w"
+    "comp": "tsc -w",
+    "start": "tsc && node lib/server.js"
   },
   "author": "jake-the-cake",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "@types/express": "^4.17.17",
     "@types/node": "^18.14.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "typescript": "^5.1.6"
   }
 }
